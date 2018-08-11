@@ -16,4 +16,6 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 # Post query to Kognitor
 POST    /query                      controllers.QueryController.query
 
+->         /subs                controllers.subscriptions.SubsRouter
+
       
