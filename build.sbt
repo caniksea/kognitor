@@ -16,7 +16,7 @@ val PhantomVersion =  "2.24.10"
 val PlayFrameWorkVersion = "2.6.17"
 val catsVersion = "1.2.0"
 
-maintainer := "Arinze Anikue "
+maintainer := "Arinze Anikwue"
 packageSummary in Linux := "CPUT "
 packageDescription := "RESEARCH API "
 
