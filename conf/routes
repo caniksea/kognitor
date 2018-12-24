@@ -14,8 +14,5 @@ GET     /message                    controllers.AsyncController.message
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
 # Post query to Kognitor
-POST    /query                      controllers.QueryController.query
-
-->         /subs                controllers.subscriptions.SubsRouter
-
-      
+->      /subs                      controllers.subscriptions.SubsRouter
+->      /request                   controllers.request.PreviseRouter

@@ -16,7 +16,7 @@ val PhantomVersion =  "2.24.10"
 val PlayFrameWorkVersion = "2.6.17"
 val catsVersion = "1.2.0"
 
-maintainer := "Arinze Anikue "
+maintainer := "Arinze Anikwue"
 packageSummary in Linux := "CPUT "
 packageDescription := "RESEARCH API "
 
@@ -42,8 +42,6 @@ javaOptions in Universal ++= Seq(
   "-J-Xmn2g"
 )
 
-
-
 libraryDependencies += guice
 libraryDependencies += filters
 libraryDependencies += "org.scalatestplus.play" % "scalatestplus-play_2.12" % "3.1.2" % "test"
@@ -52,11 +50,8 @@ libraryDependencies += "org.scalactic" % "scalactic_2.12" % "3.0.5"
 libraryDependencies += "org.typelevel" % "cats-core_2.12" % catsVersion
 libraryDependencies += "org.typelevel" %% "cats-effect" % "0.10.1"
 
-
 // https://mvnrepository.com/artifact/com.cra.figaro/figaro
 libraryDependencies += "com.cra.figaro" %% "figaro" % "5.0.0.0"
-
-
 
 libraryDependencies += "com.github.romix.akka" % "akka-kryo-serialization_2.12" % "0.5.2"
 libraryDependencies += "com.esotericsoftware" % "kryo" % "4.0.1"
@@ -65,13 +60,8 @@ libraryDependencies += "com.squareup.okhttp3" % "okhttp" % "3.10.0"
 libraryDependencies += "com.squareup.moshi" % "moshi" % "1.6.0"
 libraryDependencies += "com.squareup.moshi" % "moshi-adapters" % "1.6.0"
 
-
-
 libraryDependencies += "org.apache.commons" % "commons-lang3" % "3.7"
 libraryDependencies += "commons-io" % "commons-io" % "2.6"
-
-
-
 
 libraryDependencies += "com.typesafe.play" % "play-iteratees_2.12" % "2.6.1"
 libraryDependencies += "com.typesafe.play" % "play-iteratees-reactive-streams_2.12" % "2.6.1"
@@ -81,12 +71,10 @@ libraryDependencies += "com.outworkers" % "phantom-connectors_2.12" % PhantomVer
 libraryDependencies += "com.outworkers" % "phantom-streams_2.12" % PhantomVersion
 libraryDependencies += "com.outworkers" % "phantom-jdk8_2.12" % PhantomVersion
 
-
 libraryDependencies += "com.typesafe.play" % "play-json_2.12" % "2.6.9"
 libraryDependencies += "com.typesafe.play" % "play-akka-http-server_2.12" % PlayFrameWorkVersion
 libraryDependencies += "com.typesafe.play" % "play-guice_2.12" % PlayFrameWorkVersion
 libraryDependencies += "com.typesafe.play" % "play-ws_2.12" % PlayFrameWorkVersion
-
 
 resolvers ++= Seq(
   "Typesafe repository snapshots" at "http://repo.typesafe.com/typesafe/snapshots/",
@@ -106,12 +94,6 @@ resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots"),
   Resolver.sonatypeRepo("public")
 )
-
-
-
-
-
-
 
 libraryDependencies ++= Seq( jdbc , ehcache , ws , specs2 % Test , guice )
 
