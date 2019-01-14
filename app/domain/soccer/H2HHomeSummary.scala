@@ -2,6 +2,7 @@ package domain.soccer
 
 import play.api.libs.json.Json
 
+@Deprecated
 class H2HHomeSummary(
                 homeTeamId: String,
                 awayTeamId: String,
