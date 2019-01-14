@@ -7,7 +7,7 @@ class Model(parameters: Parameters){
   val hasHomeGroundAdvantage = Flip(parameters.head2headHomeWinsProbability)
   val form: Element[Boolean] = Flip(parameters.formProbability)
   val rating = Apply(parameters.ratingProbability,
-    (i: Double) => if(i > 7) "good"; else if (i > 6 && i < 7) "average"; else "poor")
+    (i: Double) => if(i >= 7) "good"; else if (i >= 6 && i < 7) "average"; else "poor")
 
   def determinePerformance(inForm: Boolean, rating: String): Element[Boolean] =
     if(inForm){

@@ -4,9 +4,10 @@ import java.time.LocalDateTime
 
 import play.api.libs.json.Json
 
-class Head2Head(homeTeamId: String,
+case class Head2Head(homeTeamId: String,
                 awayTeamId: String,
-                homeTeamWin: String,
+                homeTeamGoals: Int,
+                awayTeamGoals: Int,
                 dateOfCompetition: LocalDateTime,
                 dateCreated: LocalDateTime = LocalDateTime.now
                ) {}

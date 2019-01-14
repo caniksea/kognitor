@@ -8,4 +8,6 @@ trait Repository[R] {
 
   def getEntity(id: String): Future[Option[R]]
 
+  def createTable: Future[Boolean]
+
 }
