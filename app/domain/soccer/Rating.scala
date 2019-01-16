@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 import play.api.libs.json.Json
 
-class Rating(teamId: String,
+case class Rating(teamId: String,
              rating: Double,
              dateCreated: LocalDateTime = LocalDateTime.now
             ) {}
