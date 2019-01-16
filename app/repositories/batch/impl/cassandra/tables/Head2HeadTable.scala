@@ -1,4 +1,4 @@
-package repositories.batch.master.impl.cassandra.tables
+package repositories.batch.impl.cassandra.tables
 
 import java.time.LocalDateTime
 

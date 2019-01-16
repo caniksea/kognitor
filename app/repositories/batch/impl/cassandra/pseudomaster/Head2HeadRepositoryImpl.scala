@@ -1,10 +1,10 @@
-package repositories.batch.master.impl
+package repositories.batch.impl.cassandra.pseudomaster
 
-import repositories.batch.master.Head2HeadRepository
 import com.outworkers.phantom.dsl._
 import conf.connections.DataConnection
 import domain.soccer.Head2Head
-import repositories.batch.master.impl.cassandra.tables.Head2HeadTable
+import repositories.batch.Head2HeadRepository
+import repositories.batch.impl.cassandra.tables.Head2HeadTable
 
 import scala.concurrent.Future
 
@@ -18,10 +18,12 @@ class Head2HeadRepositoryImpl extends Head2HeadRepository{
 
   override def getEntity(id: String): Future[Option[Head2Head]] = ???
 
-  override def createTable: Future[Boolean] = {
-    implicit def keyspace: KeySpace = DataConnection.masterKeyspaceQuery.keySpace
+  override def getEntities: Future[Seq[Head2Head]] = ???
 
-    implicit def session: Session = DataConnection.masterConnector.session
+  override def createTable: Future[Boolean] = {
+    implicit def keyspace: KeySpace = DataConnection.pseudomasterKeyspaceQuery.keySpace
+
+    implicit def session: Session = DataConnection.pseudomasterConnector.session
 
     Head2HeadDatabase.Head2HeadTable.create.ifNotExists().future().map(result => result.head.isExhausted())
   }
@@ -31,4 +33,4 @@ class Head2HeadDatabase(override val connector: KeySpaceDef) extends Database[He
   object Head2HeadTable extends Head2HeadTable with connector.Connector
 }
 
-object Head2HeadDatabase extends Head2HeadDatabase(DataConnection.masterConnector)
+object Head2HeadDatabase extends Head2HeadDatabase(DataConnection.pseudomasterConnector)
