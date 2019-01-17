@@ -1,9 +1,8 @@
-package services.batch
+package services.soccer
 
 import domain.soccer.Head2Head
 import services.CRUDService
-import services.batch.impl.master
-import services.batch.impl.pseudomaster
+import services.soccer.impl.{master, pseudomaster}
 
 import scala.concurrent.Future
 

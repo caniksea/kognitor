@@ -17,6 +17,7 @@ object PreviseComponent {
     }
 //    val response = if (model.equals("RT")) RealTime.reason(team)
 //    else Batch.reason(team)
-    PreviseResult(true, "Reasoning was successful", response)
+//    PreviseResult(true, "Reasoning was successful", response)
+    null
   }
 }

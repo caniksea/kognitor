@@ -1,8 +1,8 @@
-package services.batch.impl.master
+package services.soccer.impl.master
 
 import domain.soccer.Head2Head
-import repositories.batch.Head2HeadRepository
-import services.batch.Head2HeadService
+import repositories.soccer.Head2HeadRepository
+import services.soccer.Head2HeadService
 
 import scala.concurrent.Future
 
