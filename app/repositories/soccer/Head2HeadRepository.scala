@@ -1,9 +1,8 @@
-package repositories.batch
+package repositories.soccer
 
 import domain.soccer.Head2Head
 import repositories.CRUDRepository
-import repositories.batch.impl.cassandra.master
-import repositories.batch.impl.cassandra.pseudomaster
+import repositories.soccer.impl.cassandra.{master, pseudomaster}
 
 import scala.concurrent.Future
 

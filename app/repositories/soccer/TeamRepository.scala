@@ -1,8 +1,8 @@
-package repositories.batch
+package repositories.soccer
 
-import domain.soccer.{Team}
+import domain.soccer.Team
 import repositories.CRUDRepository
-import repositories.batch.impl.cassandra.{master, pseudomaster}
+import repositories.soccer.impl.cassandra.{master, pseudomaster}
 
 trait TeamRepository extends CRUDRepository[Team] {
 }

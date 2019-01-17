@@ -1,10 +1,10 @@
-package repositories.batch.impl.cassandra.master
+package repositories.soccer.impl.cassandra.master
 
 import com.outworkers.phantom.dsl._
 import conf.connections.DataConnection
 import domain.soccer.Rating
-import repositories.batch.RatingRepository
-import repositories.batch.impl.cassandra.tables.RatingTable
+import repositories.soccer.RatingRepository
+import repositories.soccer.impl.cassandra.tables.RatingTable
 
 import scala.concurrent.Future
 

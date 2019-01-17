@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 import play.api.libs.json.Json
 
-class Form(
+case class Form(
           teamId: String,
           numberOfWins: Int,
           numberOfLoses: Int,

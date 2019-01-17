@@ -1,9 +1,10 @@
-package repositories.batch.impl.cassandra.tables
+package repositories.soccer.impl.cassandra.tables
 
 import java.time.LocalDateTime
 
 import com.outworkers.phantom.dsl._
 import com.outworkers.phantom.streams._
+import com.outworkers.phantom.jdk8._
 import domain.soccer.Rating
 
 import scala.concurrent.Future

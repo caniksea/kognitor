@@ -1,7 +1,8 @@
-package repositories.batch.impl.cassandra.tables
+package repositories.soccer.impl.cassandra.tables
 
 import com.outworkers.phantom.dsl._
 import com.outworkers.phantom.streams._
+import com.outworkers.phantom.jdk8._
 import domain.soccer.Team
 
 import scala.concurrent.Future
@@ -10,7 +11,7 @@ abstract class TeamTable extends Table[TeamTable, Team] with RootConnector {
 
   override implicit lazy val tableName = "team"
 
-  object teamId extends StringColumn with PrimaryKey
+  object teamId extends StringColumn with PartitionKey
 
   object teamName extends StringColumn
 

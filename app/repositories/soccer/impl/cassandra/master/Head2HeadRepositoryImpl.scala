@@ -1,10 +1,10 @@
-package repositories.batch.impl.cassandra.master
+package repositories.soccer.impl.cassandra.master
 
 import com.outworkers.phantom.dsl._
 import conf.connections.DataConnection
 import domain.soccer.Head2Head
-import repositories.batch.Head2HeadRepository
-import repositories.batch.impl.cassandra.tables.Head2HeadTable
+import repositories.soccer.Head2HeadRepository
+import repositories.soccer.impl.cassandra.tables.Head2HeadTable
 
 import scala.concurrent.Future
 
