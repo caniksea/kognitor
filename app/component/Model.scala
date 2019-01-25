@@ -2,30 +2,58 @@ package component
 
 import com.cra.figaro.language._
 
-class Model(parameters: Parameters){
+abstract class Model() {
+  val hasHomeGroundAdvantage: Element[Boolean]
+  val isInForm: Element[Boolean]
+  val hasHighRating: Element[Boolean]
+  val hasGoodStanding: Element[Boolean]
+//  val isWinner
+}
 
-  val hasHomeGroundAdvantage = Flip(parameters.head2headHomeWinsProbability)
-  val form: Element[Boolean] = Flip(parameters.formProbability)
-  val rating = Apply(parameters.ratingProbability,
-    (i: Double) => if(i >= 7) "good"; else if (i >= 6 && i < 7) "average"; else "poor")
+class LearningModel(parameters: PriorParameters) extends Model {
+  override val hasHomeGroundAdvantage = Flip(parameters.head2headHomeWinsProbability)
 
-  def determinePerformance(inForm: Boolean, rating: String): Element[Boolean] =
-    if(inForm){
-      if(rating.equalsIgnoreCase("good"))
-        Flip(0.8)
-      else if (rating.equalsIgnoreCase("average"))
-        Flip(0.5)
-      else Flip(0.3)
-    } else Constant(false)
+  override val isInForm = Flip(parameters.formProbability)
 
-  val hasGoodStanding = Chain(form, rating, determinePerformance)
+  override val hasHighRating = Flip(parameters.ratingProbability)
+
+  def determinePerformance(inForm: Boolean, rating: Boolean): Element[Boolean] =
+    if (inForm && rating) Flip(0.85)
+    else if (inForm && !rating) Flip(0.55)
+    else if (!inForm && rating) Flip(0.4)
+    else Constant(false)
+
+  override val hasGoodStanding = Chain(isInForm, hasHighRating, determinePerformance)
 
   def determineWin(hga: Boolean, goodPerformance: Boolean): Element[Boolean] =
-    if(hga && goodPerformance)
-      Flip(0.85)
-    else if(!hga && goodPerformance)
-      Flip(0.5)
-    else Flip(0.15)
+    if(hga && goodPerformance) Flip(0.85)
+    else if (!hga && goodPerformance) Flip(0.65)
+    else if (hga && !goodPerformance) Flip(0.45)
+    else Constant(false)
+
+  val isWinner = Apply(hasHomeGroundAdvantage, hasGoodStanding, determineWin)
+}
+
+class ReasoningModel(parameters: PostParameters) extends Model {
+  override val hasHomeGroundAdvantage = Flip(parameters.head2headHomeWinsProbability)
+
+  override val isInForm = Flip(parameters.formProbability)
+
+  override val hasHighRating = Flip(parameters.ratingProbability)
+
+  def determinePerformance(inForm: Boolean, rating: Boolean): Element[Boolean] =
+    if (inForm && rating) Flip(0.85)
+    else if (inForm && !rating) Flip(0.55)
+    else if (!inForm && rating) Flip(0.4)
+    else Constant(false)
+
+  override val hasGoodStanding = Chain(isInForm, hasHighRating, determinePerformance)
+
+  def determineWin(hga: Boolean, goodPerformance: Boolean): Element[Boolean] =
+    if(hga && goodPerformance) Flip(0.85)
+    else if (!hga && goodPerformance) Flip(0.65)
+    else if (hga && !goodPerformance) Flip(0.45)
+    else Constant(false)
 
   val isWinner = Apply(hasHomeGroundAdvantage, hasGoodStanding, determineWin)
 }

@@ -1,13 +1,10 @@
 package component.request
 
 import component.reasoning.{BatchReasoning, CombinedReasoning, RealtimeReasoning}
-import domain.request.Previse
-import domain.response.PreviseResult
+import domain.reasoning.{Previse, PreviseResult}
 
 object PreviseComponent {
   def previse(request: Previse): PreviseResult = {
-    val homeTeamId = request.homeTeamId
-    val awayTeamId = request.awayTeamId
     val reasoningOption = request.reasoningOption
     val response = reasoningOption.toLowerCase match {
       case "bc" => BatchReasoning.reason(request)

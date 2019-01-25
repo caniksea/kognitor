@@ -1,5 +1,7 @@
 package repositories.soccer.impl.cassandra.realtimeview
 
+import com.outworkers.phantom.connectors.KeySpace
+import com.outworkers.phantom.database.Database
 import com.outworkers.phantom.dsl._
 import conf.connections.DataConnection
 import domain.soccer.TeamProbability
@@ -25,6 +27,9 @@ class TeamProbabilityRepositoryImpl extends TeamProbabilityRepository {
 
     TeamProbabilityDatabase.TeamProbabilityTable.create.ifNotExists().future().map(result => result.head.isExhausted())
   }
+
+  override def deleteEntity(entity: TeamProbability): Future[Boolean] =
+    TeamProbabilityDatabase.TeamProbabilityTable.deleteEntity(entity).map(result => result.isExhausted())
 }
 
 class TeamProbabilityDatabase(override val connector: KeySpaceDef) extends Database[TeamProbabilityDatabase](connector) {

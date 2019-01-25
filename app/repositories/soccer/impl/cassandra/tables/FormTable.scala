@@ -21,6 +21,8 @@ abstract class FormTable extends Table[FormTable, Form] with RootConnector {
 
   object numberOfDraws extends IntColumn
 
+  object lastEvent extends StringColumn
+
   object dateCreated extends Col[LocalDateTime]
 
   def saveEntity(entity: Form): Future[ResultSet] = {
@@ -29,6 +31,7 @@ abstract class FormTable extends Table[FormTable, Form] with RootConnector {
       .value(_.numberOfWins, entity.numberOfWins)
       .value(_.numberOfLoses, entity.numberOfLoses)
       .value(_.numberOfDraws, entity.numberOfDraws)
+      .value(_.lastEvent, entity.lastEvent)
       .value(_.dateCreated, entity.dateCreated)
       .future()
   }
@@ -41,6 +44,13 @@ abstract class FormTable extends Table[FormTable, Form] with RootConnector {
 
   def getEntities(): Future[Seq[Form]] = {
     select.fetchEnumerator() run Iteratee.collect()
+  }
+
+  // remove this in production
+  def deleteEntity(entity: Form): Future[ResultSet] = {
+    delete
+      .where(_.teamId eqs entity.teamId)
+      .future()
   }
 
 }

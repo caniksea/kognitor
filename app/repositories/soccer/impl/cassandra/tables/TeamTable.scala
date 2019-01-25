@@ -32,9 +32,10 @@ abstract class TeamTable extends Table[TeamTable, Team] with RootConnector {
     select.fetchEnumerator() run Iteratee.collect()
   }
 
-  def deleteEntity(teamId: String): Future[ResultSet] = {
+  // remove this in production.
+  def deleteEntity(entity: Team): Future[ResultSet] = {
     delete
-      .where(_.teamId eqs teamId)
+      .where(_.teamId eqs entity.teamId)
       .future()
   }
 

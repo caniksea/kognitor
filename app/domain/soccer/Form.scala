@@ -9,6 +9,7 @@ case class Form(
           numberOfWins: Int,
           numberOfLoses: Int,
           numberOfDraws: Int,
+          lastEvent: String,
           dateCreated: LocalDateTime = LocalDateTime.now
           ) {}
 

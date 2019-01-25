@@ -10,6 +10,8 @@ trait CRUDRepository[R] {
 
   def getEntities: Future[Seq[R]]
 
+  def deleteEntity(entity: R): Future[Boolean]
+
   def createTable: Future[Boolean]
 
 }

@@ -1,6 +1,6 @@
 package component.reasoning
 
-import domain.request.Previse
+import domain.reasoning.Previse
 
 object RealtimeReasoning {
   def reason(team: String): Double =
