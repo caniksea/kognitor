@@ -1,5 +1,7 @@
 package repositories.soccer.impl.cassandra.pseudomaster
 
+import com.outworkers.phantom.connectors.KeySpace
+import com.outworkers.phantom.database.Database
 import com.outworkers.phantom.dsl._
 import conf.connections.DataConnection
 import domain.soccer.Form
@@ -27,6 +29,8 @@ class FormRepositoryImpl extends FormRepository {
 
   }
 
+  override def deleteEntity(entity: Form): Future[Boolean] =
+    FormDatabase.FormTable.deleteEntity(entity).map(result => result.isExhausted())
 }
 
 class FormDatabase(override val connector: KeySpaceDef) extends Database[FormDatabase](connector) {

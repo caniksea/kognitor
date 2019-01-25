@@ -1,20 +1,20 @@
 import com.typesafe.sbt.packager.docker._
-import sbt.Resolver
+//import sbt.Resolver
 
 name := "kognitor"
  
-version := "1.0" 
+version := "1.0"
 
 lazy val root = (project in file("."))
   .enablePlugins(PlayScala, DebianPlugin, JavaAppPackaging, SystemdPlugin)
 
-scalaVersion := "2.12.6"
+scalaVersion := "2.12.7"
 
 scalacOptions += "-Ypartial-unification"
 
-val PhantomVersion =  "2.24.10"
-val PlayFrameWorkVersion = "2.6.17"
-val catsVersion = "1.2.0"
+val PhantomVersion =  "2.29.0"
+val PlayFrameWorkVersion = "2.6.20"
+val catsVersion = "1.3.1"
 
 maintainer := "Arinze Anikwue"
 packageSummary in Linux := "CPUT "
@@ -44,7 +44,7 @@ javaOptions in Universal ++= Seq(
 
 libraryDependencies += guice
 libraryDependencies += filters
-libraryDependencies += "org.scalatestplus.play" % "scalatestplus-play_2.12" % "3.1.2" % "test"
+libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
 libraryDependencies += "org.scalactic" % "scalactic_2.12" % "3.0.5"
 
 libraryDependencies += "org.typelevel" % "cats-core_2.12" % catsVersion
@@ -95,9 +95,9 @@ resolvers ++= Seq(
   Resolver.sonatypeRepo("public")
 )
 
-libraryDependencies ++= Seq( jdbc , ehcache , ws , specs2 % Test , guice )
+//libraryDependencies ++= Seq( jdbc , ehcache , ws , specs2 % Test , guice )
 
-unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )
+//unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )
 
 
 

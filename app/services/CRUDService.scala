@@ -10,5 +10,7 @@ trait CRUDService[A] {
 
   def getEntity(id: String): Future[Option[A]]
 
+  def deleteEntity(entity: A): Future[Boolean]
+
   def createTable: Future[Boolean]
 }

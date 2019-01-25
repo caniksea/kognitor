@@ -42,4 +42,18 @@ abstract class Head2HeadTable extends Table[Head2HeadTable, Head2Head] with Root
       .fetchEnumerator() run Iteratee.collect()
   }
 
+//  def getHead2Head(homeTeamId: String, awayTeamId: String): Future[Seq[Head2Head]] = {
+//    select
+//      .where(_.homeTeamId eqs homeTeamId)
+//      .and(_.awayTeamId eqs awayTeamId)
+//      .fetchEnumerator() run Iteratee.collect()
+//  }
+
+  // remove in production
+  def deleteEntity(entity: Head2Head): Future[ResultSet] = {
+    delete
+      .where(_.homeTeamId eqs entity.homeTeamId)
+      .future()
+  }
+
 }

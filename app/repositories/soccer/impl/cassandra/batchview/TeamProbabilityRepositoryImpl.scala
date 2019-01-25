@@ -1,5 +1,7 @@
 package repositories.soccer.impl.cassandra.batchview
 
+import com.outworkers.phantom.connectors.KeySpace
+import com.outworkers.phantom.database.Database
 import com.outworkers.phantom.dsl._
 import conf.connections.DataConnection
 import domain.soccer.TeamProbability
@@ -17,6 +19,9 @@ class TeamProbabilityRepositoryImpl extends TeamProbabilityRepository {
 
   override def getEntities: Future[Seq[TeamProbability]] =
     TeamProbabilityDatabase.TeamProbabilityTable.getEntities()
+
+  override def deleteEntity(entity: TeamProbability): Future[Boolean] =
+    TeamProbabilityDatabase.TeamProbabilityTable.deleteEntity(entity).map(result => result.isExhausted())
 
   override def createTable: Future[Boolean] = {
     implicit def keyspace: KeySpace = DataConnection.batchViewKeyspaceQuery.keySpace

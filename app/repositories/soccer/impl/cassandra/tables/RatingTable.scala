@@ -33,4 +33,11 @@ abstract class RatingTable extends Table[RatingTable, Rating] with RootConnector
       .fetchEnumerator() run Iteratee.collect()
   }
 
+  // remove in production
+  def deleteEntity(entity: Rating): Future[ResultSet] = {
+    delete
+      .where(_.teamId eqs entity.teamId)
+      .future()
+  }
+
 }

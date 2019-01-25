@@ -1,5 +1,7 @@
 package repositories.soccer.impl.cassandra.master
 
+import com.outworkers.phantom.connectors.KeySpace
+import com.outworkers.phantom.database.Database
 import com.outworkers.phantom.dsl._
 import conf.connections.DataConnection
 import domain.soccer.Rating
@@ -27,6 +29,9 @@ class RatingRepositoryImpl extends RatingRepository {
 
     RatingDatabase.RatingTable.create.ifNotExists().future().map(result => result.head.isExhausted())
   }
+
+  override def deleteEntity(entity: Rating): Future[Boolean] =
+    RatingDatabase.RatingTable.deleteEntity(entity).map(result => result.isExhausted())
 }
 
 class RatingDatabase(override val connector: KeySpaceDef) extends Database[RatingDatabase](connector) {

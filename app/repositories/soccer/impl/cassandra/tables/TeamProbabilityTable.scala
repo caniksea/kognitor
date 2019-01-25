@@ -11,7 +11,7 @@ abstract class TeamProbabilityTable extends Table[TeamProbabilityTable, TeamProb
 
   override lazy val tableName = "teamprobability"
 
-  object teamId extends StringColumn with PartitionKey
+  object teamId extends StringColumn with PrimaryKey
 
   object head2headHomeWinsProbability extends DoubleColumn
 
@@ -37,6 +37,12 @@ abstract class TeamProbabilityTable extends Table[TeamProbabilityTable, TeamProb
   def getEntities(): Future[Seq[TeamProbability]] = {
     select
       .fetchEnumerator() run Iteratee.collect()
+  }
+
+  def deleteEntity(entity: TeamProbability): Future[ResultSet] = {
+    delete
+      .where(_.teamId eqs entity.teamId)
+      .future()
   }
 
 }

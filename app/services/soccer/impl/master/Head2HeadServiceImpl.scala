@@ -20,4 +20,6 @@ class Head2HeadServiceImpl extends Head2HeadService {
     Head2HeadRepository.masterImpl.getEntity(homeTeamId)
 
   override def createTable: Future[Boolean] = Head2HeadRepository.masterImpl.createTable
+
+  override def deleteEntity(entity: Head2Head): Future[Boolean] = Head2HeadRepository.masterImpl.deleteEntity(entity)
 }

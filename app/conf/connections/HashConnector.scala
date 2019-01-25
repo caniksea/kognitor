@@ -4,15 +4,15 @@ import java.net.InetAddress
 
 import com.datastax.driver.core.policies.DCAwareRoundRobinPolicy
 import com.datastax.driver.core.{PoolingOptions, SocketOptions}
-import com.outworkers.phantom.connectors.{ContactPoint, ContactPoints}
+import com.outworkers.phantom.connectors.ContactPoints
 import com.outworkers.phantom.dsl._
-import com.typesafe.config.ConfigFactory
+import com.typesafe.config.{Config, ConfigFactory}
 
 import scala.collection.JavaConverters._
 
 
-object Config {
-  val config = ConfigFactory.load()
+object Configuration {
+  val config: Config = ConfigFactory.load()
 
   def PORT = 9042
 
@@ -34,92 +34,92 @@ object Config {
 
 object DataConnection {
 
-  val masterKeyspaceQuery = KeySpace(Config.masterKeyspace).ifNotExists()
+  val masterKeyspaceQuery = KeySpace(Configuration.masterKeyspace).ifNotExists()
     .`with`(replication eqs NetworkTopologyStrategy
-      .data_center(Config.dataCenter, 3))
+      .data_center(Configuration.dataCenter, 3))
     .and(durable_writes eqs true)
 
-  val pseudomasterKeyspaceQuery = KeySpace(Config.pseudomasterKeyspace).ifNotExists()
+  val pseudomasterKeyspaceQuery = KeySpace(Configuration.pseudomasterKeyspace).ifNotExists()
     .`with`(replication eqs NetworkTopologyStrategy
-      .data_center(Config.dataCenter, 3))
+      .data_center(Configuration.dataCenter, 3))
     .and(durable_writes eqs true)
 
-  val rtViewKeyspaceQuery = KeySpace(Config.rtViewKeyspace).ifNotExists()
+  val rtViewKeyspaceQuery = KeySpace(Configuration.rtViewKeyspace).ifNotExists()
     .`with`(replication eqs NetworkTopologyStrategy
-      .data_center(Config.dataCenter, 3))
+      .data_center(Configuration.dataCenter, 3))
     .and(durable_writes eqs true)
 
-  val batchViewKeyspaceQuery = KeySpace(Config.batchViewKeyspace).ifNotExists()
+  val batchViewKeyspaceQuery = KeySpace(Configuration.batchViewKeyspace).ifNotExists()
     .`with`(replication eqs NetworkTopologyStrategy
-      .data_center(Config.dataCenter, 3))
+      .data_center(Configuration.dataCenter, 3))
     .and(durable_writes eqs true)
 
-  lazy val masterConnector = ContactPoints(Config.hosts, Config.PORT)
+  lazy val masterConnector = ContactPoints(Configuration.hosts, Configuration.PORT)
     .withClusterBuilder(
-      _.withClusterName(Config.clusterName)
+      _.withClusterName(Configuration.clusterName)
         .withSocketOptions(new SocketOptions()
-          .setReadTimeoutMillis(Config.readTimeoutMillis)
-          .setConnectTimeoutMillis(Config.connectionTimeoutMillis))
+          .setReadTimeoutMillis(Configuration.readTimeoutMillis)
+          .setConnectTimeoutMillis(Configuration.connectionTimeoutMillis))
         .withPoolingOptions(new PoolingOptions()
           .setMaxQueueSize(100000)
           .setPoolTimeoutMillis(20000))
         .withLoadBalancingPolicy(
           new DCAwareRoundRobinPolicy.Builder()
             .withUsedHostsPerRemoteDc(1)
-            .withLocalDc(Config.dataCenter).build()
+            .withLocalDc(Configuration.dataCenter).build()
         )
-    ).noHeartbeat().keySpace(Config.masterKeyspace)
+    ).noHeartbeat().keySpace(Configuration.masterKeyspace)
 
-  lazy val pseudomasterConnector = ContactPoints(Config.hosts, Config.PORT)
+  lazy val pseudomasterConnector = ContactPoints(Configuration.hosts, Configuration.PORT)
     .withClusterBuilder(
-      _.withClusterName(Config.clusterName)
+      _.withClusterName(Configuration.clusterName)
         .withSocketOptions(new SocketOptions()
-          .setReadTimeoutMillis(Config.readTimeoutMillis)
-          .setConnectTimeoutMillis(Config.connectionTimeoutMillis))
+          .setReadTimeoutMillis(Configuration.readTimeoutMillis)
+          .setConnectTimeoutMillis(Configuration.connectionTimeoutMillis))
         .withPoolingOptions(new PoolingOptions()
           .setMaxQueueSize(100000)
           .setPoolTimeoutMillis(20000))
         .withLoadBalancingPolicy(
           new DCAwareRoundRobinPolicy.Builder()
             .withUsedHostsPerRemoteDc(1)
-            .withLocalDc(Config.dataCenter).build()
+            .withLocalDc(Configuration.dataCenter).build()
         )
-    ).noHeartbeat().keySpace(Config.pseudomasterKeyspace)
+    ).noHeartbeat().keySpace(Configuration.pseudomasterKeyspace)
 
-  lazy val rtViewConnector = ContactPoints(Config.hosts, Config.PORT)
+  lazy val rtViewConnector = ContactPoints(Configuration.hosts, Configuration.PORT)
     .withClusterBuilder(
-      _.withClusterName(Config.clusterName)
+      _.withClusterName(Configuration.clusterName)
         .withSocketOptions(new SocketOptions()
-          .setReadTimeoutMillis(Config.readTimeoutMillis)
-          .setConnectTimeoutMillis(Config.connectionTimeoutMillis))
+          .setReadTimeoutMillis(Configuration.readTimeoutMillis)
+          .setConnectTimeoutMillis(Configuration.connectionTimeoutMillis))
         .withPoolingOptions(new PoolingOptions()
           .setMaxQueueSize(100000)
           .setPoolTimeoutMillis(20000))
         .withLoadBalancingPolicy(
           new DCAwareRoundRobinPolicy.Builder()
             .withUsedHostsPerRemoteDc(1)
-            .withLocalDc(Config.dataCenter).build()
+            .withLocalDc(Configuration.dataCenter).build()
         )
-    ).noHeartbeat().keySpace(Config.rtViewKeyspace)
+    ).noHeartbeat().keySpace(Configuration.rtViewKeyspace)
 
-  lazy val batchViewConnector = ContactPoints(Config.hosts, Config.PORT)
+  lazy val batchViewConnector = ContactPoints(Configuration.hosts, Configuration.PORT)
     .withClusterBuilder(
-      _.withClusterName(Config.clusterName)
+      _.withClusterName(Configuration.clusterName)
         .withSocketOptions(new SocketOptions()
-          .setReadTimeoutMillis(Config.readTimeoutMillis)
-          .setConnectTimeoutMillis(Config.connectionTimeoutMillis))
+          .setReadTimeoutMillis(Configuration.readTimeoutMillis)
+          .setConnectTimeoutMillis(Configuration.connectionTimeoutMillis))
         .withPoolingOptions(new PoolingOptions()
           .setMaxQueueSize(100000)
           .setPoolTimeoutMillis(20000))
         .withLoadBalancingPolicy(
           new DCAwareRoundRobinPolicy.Builder()
             .withUsedHostsPerRemoteDc(1)
-            .withLocalDc(Config.dataCenter).build()
+            .withLocalDc(Configuration.dataCenter).build()
         )
-    ).noHeartbeat().keySpace(Config.batchViewKeyspace)
+    ).noHeartbeat().keySpace(Configuration.batchViewKeyspace)
 
   /**
     * Create an embedded connector, used for testing purposes
     */
-//  lazy val testConnector = ContactPoint.embedded.noHeartbeat().keySpace(Config.keySpace)
+  //  lazy val testConnector = ContactPoint.embedded.noHeartbeat().keySpace(Config.keySpace)
 }

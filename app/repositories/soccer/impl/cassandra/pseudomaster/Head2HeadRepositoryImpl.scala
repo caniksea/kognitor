@@ -1,5 +1,7 @@
 package repositories.soccer.impl.cassandra.pseudomaster
 
+import com.outworkers.phantom.connectors.KeySpace
+import com.outworkers.phantom.database.Database
 import com.outworkers.phantom.dsl._
 import conf.connections.DataConnection
 import domain.soccer.Head2Head
@@ -27,6 +29,9 @@ class Head2HeadRepositoryImpl extends Head2HeadRepository{
 
     Head2HeadDatabase.Head2HeadTable.create.ifNotExists().future().map(result => result.head.isExhausted())
   }
+
+  override def deleteEntity(entity: Head2Head): Future[Boolean] =
+    Head2HeadDatabase.Head2HeadTable.deleteEntity(entity).map(result => result.isExhausted())
 }
 
 class Head2HeadDatabase(override val connector: KeySpaceDef) extends Database[Head2HeadDatabase](connector) {
