@@ -7,10 +7,8 @@ import services.reasoning.PreviseService
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class PreviseServiceImpl extends PreviseService{
+class PreviseServiceImpl extends PreviseService {
   override def previse(request: Previse): Future[PreviseResult] = {
-    Future {
-      PreviseComponent.previse(request)
-    }
+    PreviseComponent.previse(request)
   }
 }

@@ -11,7 +11,7 @@ abstract class TeamProbabilityTable extends Table[TeamProbabilityTable, TeamProb
 
   override lazy val tableName = "teamprobability"
 
-  object teamId extends StringColumn with PrimaryKey
+  object teamId extends StringColumn with PartitionKey
 
   object head2headHomeWinsProbability extends DoubleColumn
 

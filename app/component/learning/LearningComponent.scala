@@ -2,7 +2,7 @@ package component.learning
 
 import com.cra.figaro.algorithm.learning.EMWithBP
 import component.soccer.TeamHelper
-import component.{LearningModel, PostParameters, PriorParameters}
+import component.{LearningModel, Model, PostParameters, PriorParameters}
 import domain.learning.LearningResponse
 import domain.soccer.{Form, Head2Head, TeamProbability}
 import services.soccer.{FormService, Head2HeadService, TeamProbabilityService}
@@ -44,7 +44,7 @@ object LearningComponent {
 
     labeled.map( win => {
       val teamHelper = new TeamHelper
-      val model = new LearningModel(priorParams)
+      val model: Model = new LearningModel(priorParams)
       teamHelper.observeHomeGroundAdv(model, win)
       model
     })
@@ -67,7 +67,7 @@ object LearningComponent {
 
     labeled.map( form => {
       val teamHelper = new TeamHelper
-      val model = new LearningModel(priorParams)
+      val model: Model = new LearningModel(priorParams)
       teamHelper.observeForm(model, form)
       model
     })
@@ -109,6 +109,7 @@ object LearningComponent {
 
   def learnMAP(parameters: PriorParameters): PostParameters = {
     val algorithm = EMWithBP(parameters.probabilities._1: _*)
+    algorithm.start()
     val head2headHomeWinProbability = parameters.head2headHomeWinsProbability.MAPValue
     val formProbability = parameters.formProbability.MAPValue
     val ratingProbability = parameters.probabilities._2.generateRandomness()

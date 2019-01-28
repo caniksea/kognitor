@@ -1,6 +1,9 @@
 import cats.Monoid
 import cats.implicits._
+import com.cra.figaro.algorithm.factored.VariableElimination
 import com.cra.figaro.library.atomic.continuous.Uniform
+import component.soccer.TeamHelper
+import component._
 
 
 
@@ -34,3 +37,16 @@ val ee = re.take(4)
 
 val you = Uniform(6.00, 10)
 val youd = you.generateRandomness()
+
+//val params = new PriorParameters
+//val formP = params.formProbability.MAPValue
+//val post =
+//  new PostParameters(params.head2headHomeWinsProbability.MAPValue,
+//    formP,
+//    params.ratingProbability.generateRandomness())
+//val model: Model = new ReasoningModel(post)
+//new TeamHelper().observeForm(model, Some(false))
+//val algorithm = VariableElimination(model.isInForm)
+//algorithm.start()
+//val isWinProbability = algorithm.probability(model.isInForm, false)
+//println("Win probability: " + isWinProbability)

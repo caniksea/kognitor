@@ -17,7 +17,7 @@ abstract class RatingTable extends Table[RatingTable, Rating] with RootConnector
 
   object rating extends DoubleColumn
 
-  object dateCreated extends Col[LocalDateTime]
+  object dateCreated extends Col[LocalDateTime] with PrimaryKey
 
   def saveEntity(rating: Rating): Future[ResultSet] = {
     insert

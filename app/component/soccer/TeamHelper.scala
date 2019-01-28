@@ -1,17 +1,17 @@
 package component.soccer
 
-import component.LearningModel
+import component.Model
 
 class TeamHelper {
 
-  def observeForm(model: LearningModel, form: Option[Boolean]) {
+  def observeForm(model: Model, form: Option[Boolean]) {
     form match {
       case Some(b) => model.isInForm.observe(b)
       case None => ()
     }
   }
 
-  def observeHomeGroundAdv(model: LearningModel, isWin: Option[Boolean]) {
+  def observeHomeGroundAdv(model: Model, isWin: Option[Boolean]) {
     isWin match {
       case Some(b) => model.hasHomeGroundAdvantage.observe(b)
       case None => ()

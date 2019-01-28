@@ -3,8 +3,10 @@ package component.request
 import component.reasoning.{BatchReasoning, CombinedReasoning, RealtimeReasoning}
 import domain.reasoning.{Previse, PreviseResult}
 
+import scala.concurrent.Future
+
 object PreviseComponent {
-  def previse(request: Previse): PreviseResult = {
+  def previse(request: Previse): Future[PreviseResult] = {
     val reasoningOption = request.reasoningOption
     val response = reasoningOption.toLowerCase match {
       case "bc" => BatchReasoning.reason(request)
