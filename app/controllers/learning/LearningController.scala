@@ -17,7 +17,7 @@ class LearningController @Inject()(cc: ControllerComponents) extends AbstractCon
       } yield result
       response.map(ans => Ok(Json.toJson(ans)))
         .recover{
-          case exception: Exception => InternalServerError
+          case exception: Exception => {println(exception.getMessage); exception.printStackTrace; InternalServerError}
         }
   }
 

@@ -1,6 +1,7 @@
 package component
 
 import com.cra.figaro.language._
+import com.cra.figaro.library.compound.If
 
 abstract class Model() {
   val hasHomeGroundAdvantage: Element[Boolean]
@@ -32,6 +33,8 @@ class LearningModel(parameters: PriorParameters) extends Model {
     else Constant(false)
 
   val isWinner = Apply(hasHomeGroundAdvantage, hasGoodStanding, determineWin)
+
+  val win: Element[Boolean] = If(hasHomeGroundAdvantage && hasGoodStanding, Flip(0.85), Flip(0))
 }
 
 class ReasoningModel(parameters: PostParameters) extends Model {

@@ -23,7 +23,7 @@ abstract class FormTable extends Table[FormTable, Form] with RootConnector {
 
   object lastEvent extends StringColumn
 
-  object dateCreated extends Col[LocalDateTime]
+  object dateCreated extends Col[LocalDateTime] with PrimaryKey
 
   def saveEntity(entity: Form): Future[ResultSet] = {
     insert

@@ -23,7 +23,7 @@ abstract class Head2HeadTable extends Table[Head2HeadTable, Head2Head] with Root
 
   object dateOfCompetition extends Col[LocalDateTime]
 
-  object dateCreated extends Col[LocalDateTime]
+  object dateCreated extends Col[LocalDateTime] with PrimaryKey
 
   def saveEntity(entity: Head2Head): Future[ResultSet] = {
     insert
