@@ -18,7 +18,7 @@ class PriorParameters {
 
   val head2headHomeWinsProbability = Beta(h2hWinValue, h2hLossValue)
   val formProbability = Beta(lastWinValue, lastLoseValue)
-  val ratingProbability = Uniform(6.00, 10)
+  val ratingProbability = Uniform(0.6, 1)
   val probabilities = (Seq(head2headHomeWinsProbability, formProbability), ratingProbability)
 
 }

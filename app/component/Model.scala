@@ -20,21 +20,18 @@ class LearningModel(parameters: PriorParameters) extends Model {
 
   def determinePerformance(inForm: Boolean, rating: Boolean): Element[Boolean] =
     if (inForm && rating) Flip(0.85)
-    else if (inForm && !rating) Flip(0.55)
-    else if (!inForm && rating) Flip(0.4)
+    else if (!inForm || !rating) Flip(0.45)
     else Constant(false)
 
   override val hasGoodStanding = Chain(isInForm, hasHighRating, determinePerformance)
 
   def determineWin(hga: Boolean, goodPerformance: Boolean): Element[Boolean] =
     if(hga && goodPerformance) Flip(0.85)
-    else if (!hga && goodPerformance) Flip(0.65)
-    else if (hga && !goodPerformance) Flip(0.45)
+    else if (!hga || !goodPerformance) Flip(0.45)
     else Constant(false)
 
   val isWinner = Apply(hasHomeGroundAdvantage, hasGoodStanding, determineWin)
 
-  val win: Element[Boolean] = If(hasHomeGroundAdvantage && hasGoodStanding, Flip(0.85), Flip(0))
 }
 
 class ReasoningModel(parameters: PostParameters) extends Model {
@@ -46,16 +43,14 @@ class ReasoningModel(parameters: PostParameters) extends Model {
 
   def determinePerformance(inForm: Boolean, rating: Boolean): Element[Boolean] =
     if (inForm && rating) Flip(0.85)
-    else if (inForm && !rating) Flip(0.55)
-    else if (!inForm && rating) Flip(0.4)
+    else if (!inForm || !rating) Flip(0.45)
     else Constant(false)
 
   override val hasGoodStanding = Chain(isInForm, hasHighRating, determinePerformance)
 
   def determineWin(hga: Boolean, goodPerformance: Boolean): Element[Boolean] =
     if(hga && goodPerformance) Flip(0.85)
-    else if (!hga && goodPerformance) Flip(0.65)
-    else if (hga && !goodPerformance) Flip(0.45)
+    else if (!hga || !goodPerformance) Flip(0.45)
     else Constant(false)
 
   val isWinner = Apply(hasHomeGroundAdvantage, hasGoodStanding, determineWin)
