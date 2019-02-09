@@ -1,27 +1,31 @@
 import com.typesafe.sbt.packager.docker._
-//import sbt.Resolver
+import sbt.Resolver
 
 name := "kognitor"
  
-version := "1.0"
+version := "1.0" 
 
 lazy val root = (project in file("."))
   .enablePlugins(PlayScala, DebianPlugin, JavaAppPackaging, SystemdPlugin)
 
-scalaVersion := "2.12.7"
+scalaVersion := "2.12.8"
 
 scalacOptions += "-Ypartial-unification"
 
-val PhantomVersion =  "2.29.0"
-val PlayFrameWorkVersion = "2.6.20"
-val catsVersion = "1.3.1"
+val PhantomVersion = "2.33.0"
+val PlayFrameWorkVersion = "2.7.0"
+val catsVersion = "1.6.0"
+val circeVersion = "0.10.0"
+val TwitterChillVersion = "0.9.3"
+val MoshiVersion ="1.8.0"
 
-maintainer := "Arinze Anikwue"
+maintainer := "Arinze Anikue "
 packageSummary in Linux := "CPUT "
 packageDescription := "RESEARCH API "
 
 dockerCommands := Seq(
-  Cmd("FROM", "anapsix/alpine-java:jdk8"),
+  Cmd("FROM", "azul/zulu-openjdk-alpine:11"),
+  Cmd("RUN", "apk --no-cache add bash"),
   Cmd("MAINTAINER", maintainer.value),
   Cmd("WORKDIR", "/opt/docker"),
   Cmd("ADD", "/opt /opt"),
@@ -42,16 +46,34 @@ javaOptions in Universal ++= Seq(
   "-J-Xmn2g"
 )
 
+
+
+libraryDependencies ++= Seq("io.circe" %% "circe-core", "io.circe" %% "circe-generic", "io.circe" %% "circe-parser"
+).map(_ % circeVersion)
+
+
+
+
 libraryDependencies += guice
 libraryDependencies += filters
-libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
+libraryDependencies += "org.scalatestplus.play" % "scalatestplus-play_2.12" % "3.1.2" % "test"
 libraryDependencies += "org.scalactic" % "scalactic_2.12" % "3.0.5"
+// https://mvnrepository.com/artifact/com.twitter/chill-akka
+libraryDependencies += "com.twitter" % "chill_2.12" % TwitterChillVersion
+libraryDependencies += "com.twitter" % "chill-akka_2.12" %  TwitterChillVersion
 
 libraryDependencies += "org.typelevel" % "cats-core_2.12" % catsVersion
 libraryDependencies += "org.typelevel" %% "cats-effect" % "0.10.1"
 
+
 // https://mvnrepository.com/artifact/com.cra.figaro/figaro
 libraryDependencies += "com.cra.figaro" %% "figaro" % "5.0.0.0"
+
+
+libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.1" % Test
+libraryDependencies += "com.typesafe.play" % "play-json_2.12" % "2.7.1"
+
+
 
 libraryDependencies += "com.github.romix.akka" % "akka-kryo-serialization_2.12" % "0.5.2"
 libraryDependencies += "com.esotericsoftware" % "kryo" % "4.0.1"
@@ -60,8 +82,13 @@ libraryDependencies += "com.squareup.okhttp3" % "okhttp" % "3.10.0"
 libraryDependencies += "com.squareup.moshi" % "moshi" % "1.6.0"
 libraryDependencies += "com.squareup.moshi" % "moshi-adapters" % "1.6.0"
 
+
+
 libraryDependencies += "org.apache.commons" % "commons-lang3" % "3.7"
 libraryDependencies += "commons-io" % "commons-io" % "2.6"
+
+
+
 
 libraryDependencies += "com.typesafe.play" % "play-iteratees_2.12" % "2.6.1"
 libraryDependencies += "com.typesafe.play" % "play-iteratees-reactive-streams_2.12" % "2.6.1"
@@ -71,10 +98,11 @@ libraryDependencies += "com.outworkers" % "phantom-connectors_2.12" % PhantomVer
 libraryDependencies += "com.outworkers" % "phantom-streams_2.12" % PhantomVersion
 libraryDependencies += "com.outworkers" % "phantom-jdk8_2.12" % PhantomVersion
 
-libraryDependencies += "com.typesafe.play" % "play-json_2.12" % "2.6.9"
+
 libraryDependencies += "com.typesafe.play" % "play-akka-http-server_2.12" % PlayFrameWorkVersion
 libraryDependencies += "com.typesafe.play" % "play-guice_2.12" % PlayFrameWorkVersion
 libraryDependencies += "com.typesafe.play" % "play-ws_2.12" % PlayFrameWorkVersion
+
 
 resolvers ++= Seq(
   "Typesafe repository snapshots" at "http://repo.typesafe.com/typesafe/snapshots/",
@@ -94,10 +122,6 @@ resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots"),
   Resolver.sonatypeRepo("public")
 )
-
-//libraryDependencies ++= Seq( jdbc , ehcache , ws , specs2 % Test , guice )
-
-//unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )
 
 
 
