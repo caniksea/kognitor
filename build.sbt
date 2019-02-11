@@ -103,6 +103,16 @@ libraryDependencies += "com.typesafe.play" % "play-akka-http-server_2.12" % Play
 libraryDependencies += "com.typesafe.play" % "play-guice_2.12" % PlayFrameWorkVersion
 libraryDependencies += "com.typesafe.play" % "play-ws_2.12" % PlayFrameWorkVersion
 
+// https://mvnrepository.com/artifact/com.softwaremill.sttp/core
+libraryDependencies += "com.softwaremill.sttp" %% "core" % "1.5.2"
+// https://mvnrepository.com/artifact/com.softwaremill.sttp/circe
+libraryDependencies += "com.softwaremill.sttp" %% "circe" % "1.5.2"
+// https://mvnrepository.com/artifact/com.softwaremill.sttp/akka-http-backend
+libraryDependencies += "com.softwaremill.sttp" %% "async-http-client-backend-future" % "1.5.2"
+// https://mvnrepository.com/artifact/com.softwaremill.sttp/json4s
+libraryDependencies += "com.softwaremill.sttp" %% "play-json" % "1.5.2"
+// https://mvnrepository.com/artifact/org.json4s/json4s-native
+
 
 resolvers ++= Seq(
   "Typesafe repository snapshots" at "http://repo.typesafe.com/typesafe/snapshots/",
