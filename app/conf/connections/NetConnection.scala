@@ -5,10 +5,9 @@ import okhttp3.{MediaType, OkHttpClient, Request, RequestBody}
 
 object NetConnection {
 
-  lazy val config: Config = ConfigFactory.load()
-  lazy val apiUrl : String = config.getString("api.baseUrl")
-  lazy val crawler: String = config.getString("crawler.URI")
-  lazy val schema  = config.getBoolean("schema.status")
+  lazy val apiUrl : String = Configuration.config.getString("api.baseUrl")
+  lazy val crawler: String = Configuration.config.getString("crawler.URI")
+  lazy val schema  = Configuration.config.getBoolean("schema.status")
   implicit val mediaType: MediaType = MediaType.parse("application/json")
 
 
