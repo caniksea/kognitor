@@ -19,7 +19,7 @@ val circeVersion = "0.10.0"
 val TwitterChillVersion = "0.9.3"
 val MoshiVersion ="1.8.0"
 
-maintainer := "Arinze Anikue "
+maintainer := "Arinze Anikwue "
 packageSummary in Linux := "CPUT "
 packageDescription := "RESEARCH API "
 
