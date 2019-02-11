@@ -5,6 +5,7 @@ import java.util.UUID
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.routing.{DefaultResizer, RoundRobinPool}
+import conf.connections.Configuration
 import domain.datainjection.Link
 import services.actors.ProcessLinksActor.LinkMessage
 
@@ -20,8 +21,12 @@ class ProcessLinksActor extends Actor with ActorLogging {
 
   val persistDataActorProps: Props = PersistDataActor.props
 
-  val resizer = DefaultResizer(lowerBound = Util.config.getInt("actorNumbers.lowerBound"), upperBound = Util.config.getInt("actorNumbers.upperBound"))
-  val persistDataActorActorRef: ActorRef = context.actorOf(RoundRobinPool(Util.config.getInt("actorNumbers.start"), Some(resizer)).props(persistDataActorProps))
+  val resizer =
+    DefaultResizer(lowerBound = Configuration.config.getInt("custom-akka-actors.actorNumbers.lowerBound"),
+      upperBound = Configuration.config.getInt("custom-akka-actors.actorNumbers.upperBound"))
+  val persistDataActorActorRef: ActorRef =
+    context.actorOf(RoundRobinPool(Configuration.config.getInt("custom-akka-actors.actorNumbers.start"),
+      Some(resizer)).props(persistDataActorProps))
 
 
   override def receive: PartialFunction[Any, Unit] = {
