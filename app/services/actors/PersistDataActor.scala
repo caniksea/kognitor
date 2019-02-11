@@ -14,8 +14,9 @@ object PersistDataActor {
 class PersistDataActor extends Actor with ActorLogging {
   override def receive: PartialFunction[Any, Unit] = {
     case post: PersistMessage => {
-      if (post.message.title.length != 0)
+      if (post.message.title.length != 0) {
         // Save Service Here
+      }
 
     }
 

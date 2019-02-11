@@ -27,7 +27,7 @@ object LearningComponent {
       teamH2H.filter(h2h => h2h.awayTeamGoals > h2h.homeTeamGoals))
   }
 
-  def learnHomeAdv(priorParams: PriorParameters, teamH2H: Seq[Head2Head]) = {
+  def learnHomeAdv(teamH2H: Seq[Head2Head]) = {
     val h2hMaxLabelLength = teamH2H.size / 3
     val (wins, loses) = getWinsnLoses(teamH2H)
     val winLabelSize = if (wins.size / 3 < h2hMaxLabelLength) h2hMaxLabelLength else wins.size / 3
@@ -44,13 +44,13 @@ object LearningComponent {
 
     labeled.map( win => {
       val teamHelper = new TeamHelper
-      val model: Model = new LearningModel(priorParams)
+      val model: Model = new LearningModel(getPriorParams)
       teamHelper.observeHomeGroundAdv(model, win)
       model
     })
   }
 
-  def learnForm(priorParams: PriorParameters, teamForms: Seq[Form]) = {
+  def learnForm(teamForms: Seq[Form]) = {
     val formMaxLabelLength = teamForms.size / 3
     val (goodForms, badForms) = getGoodnBadForms(teamForms)
     val goodFormLabelSize = if (goodForms.size / 3 < formMaxLabelLength) formMaxLabelLength else goodForms.size / 3
@@ -67,18 +67,16 @@ object LearningComponent {
 
     labeled.map( form => {
       val teamHelper = new TeamHelper
-      val model: Model = new LearningModel(priorParams)
+      val model: Model = new LearningModel(getPriorParams)
       teamHelper.observeForm(model, form)
       model
     })
   }
 
   def learnModels(teamH2H: Seq[Head2Head], teamForms: Seq[Form]) = {
-    val priorParams = getPriorParams
+    learnHomeAdv(teamH2H)
 
-    learnHomeAdv(priorParams, teamH2H)
-
-    learnForm(priorParams, teamForms)
+    learnForm(teamForms)
 
   }
 

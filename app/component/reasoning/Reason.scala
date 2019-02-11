@@ -54,7 +54,7 @@ object Reason {
       val batchValue: Double = batchReasoning.getOrElse(-1)
       val realtimeValue: Double = realtimeReasoning.getOrElse(-1)
       if(batchValue != -1 && realtimeValue != -1) {
-        val res = (batchValue + realtimeValue) / 2
+        val res = (batchValue * 0.2 + realtimeValue * 0.8)
         PreviseResult(true, "Reasoning successful!", res)
       } else {
         PreviseResult(false, "An error occurred!", 0)
