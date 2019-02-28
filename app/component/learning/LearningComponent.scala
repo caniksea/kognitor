@@ -4,8 +4,8 @@ import com.cra.figaro.algorithm.learning.EMWithBP
 import component.soccer.TeamHelper
 import component.{LearningModel, Model, PostParameters, PriorParameters}
 import domain.learning.LearningResponse
-import domain.soccer.{Form, Head2Head, TeamProbability}
-import services.soccer.{FormService, Head2HeadService, TeamProbabilityService}
+import domain.soccer.{Form, Fixture, TeamProbability}
+import services.soccer.{FormService, FixtureService, TeamProbabilityService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -15,19 +15,30 @@ object LearningComponent {
   def getPriorParams = new PriorParameters
 
   def getTeamMatches(teamId: String) =
-    Head2HeadService.masterImpl.getHomeTeamMatches(teamId)
+    FixtureService.masterImpl.getHomeTeamMatches(teamId)
 
 
+  /**
+    * Get label for good/bad form based on
+    * GoodForm: (number of wins + number of draws/2) > (number of loses + number of draw/2)
+    * @param teamForms
+    * @return
+    */
   def getGoodnBadForms(teamForms: Seq[Form]) =
-    (teamForms.filter(form => form.numberOfWins > form.numberOfLoses),
-      teamForms.filter(form => form.numberOfLoses > form.numberOfWins))
+    (teamForms.filter(form => form.numberOfWins + form.numberOfDraws / 2 > form.numberOfLoses + form.numberOfDraws / 2),
+      teamForms.filter(form => form.numberOfLoses + form.numberOfDraws / 2 > form.numberOfWins + form.numberOfDraws / 2))
 
-  def getWinsnLoses(teamH2H: Seq[Head2Head]) = {
+  /**
+    * Get win and lose matches
+    * @param teamH2H
+    * @return
+    */
+  def getWinsnLoses(teamH2H: Seq[Fixture]) = {
     (teamH2H.filter(h2h => h2h.homeTeamGoals >= h2h.awayTeamGoals),
       teamH2H.filter(h2h => h2h.awayTeamGoals > h2h.homeTeamGoals))
   }
 
-  def learnHomeAdv(teamH2H: Seq[Head2Head]) = {
+  def learnHomeAdv(teamH2H: Seq[Fixture]) = {
     val h2hMaxLabelLength = teamH2H.size / 3
     val (wins, loses) = getWinsnLoses(teamH2H)
     val winLabelSize = if (wins.size / 3 < h2hMaxLabelLength) h2hMaxLabelLength else wins.size / 3
@@ -50,7 +61,7 @@ object LearningComponent {
     })
   }
 
-  def learnForm(teamForms: Seq[Form]) = {
+  def learnForm(model: Seq[Model], teamForms: Seq[Form]) = {
     val formMaxLabelLength = teamForms.size / 3
     val (goodForms, badForms) = getGoodnBadForms(teamForms)
     val goodFormLabelSize = if (goodForms.size / 3 < formMaxLabelLength) formMaxLabelLength else goodForms.size / 3
@@ -73,10 +84,11 @@ object LearningComponent {
     })
   }
 
-  def learnModels(teamH2H: Seq[Head2Head], teamForms: Seq[Form]) = {
-    learnHomeAdv(teamH2H)
+  def learnModels(teamH2H: Seq[Fixture], teamForms: Seq[Form]) = {
 
-    learnForm(teamForms)
+    val models: Seq[Model] = learnHomeAdv(teamH2H)
+
+    learnForm(models, teamForms)
 
   }
 
@@ -86,6 +98,11 @@ object LearningComponent {
   def saveResult(teamProbabilities: TeamProbability) =
     TeamProbabilityService.batchViewImpl.saveEntity(teamProbabilities)
 
+  /**
+    * starting point. Should learn for all teams in the db
+    * @param teamId
+    * @return
+    */
   def learn(teamId: String): Future[LearningResponse] = {
     val models = for {
       teamH2H <- getTeamMatches(teamId)

@@ -2,7 +2,7 @@ import cats.Monoid
 import cats.implicits._
 import com.cra.figaro.algorithm.factored.VariableElimination
 import com.cra.figaro.language.Constant
-import com.cra.figaro.library.atomic.continuous.Uniform
+import com.cra.figaro.library.atomic.continuous.{Beta, Uniform}
 import component.soccer.TeamHelper
 import component._
 
@@ -35,6 +35,8 @@ Monoid.combineAll(scores)
 val re = Seq(3, 2, 4, 2, 5)
 val er = Seq(2, 5)
 val ee = re.take(4)
+
+val help = Beta(2.5, 3.5)
 
 val you = Uniform(0.6, 1)
 val youd = you.generateRandomness()

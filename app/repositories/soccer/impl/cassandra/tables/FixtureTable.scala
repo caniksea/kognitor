@@ -5,13 +5,13 @@ import java.time.LocalDateTime
 import com.outworkers.phantom.dsl._
 import com.outworkers.phantom.streams._
 import com.outworkers.phantom.jdk8._
-import domain.soccer.Head2Head
+import domain.soccer.Fixture
 
 import scala.concurrent.Future
 
-abstract class Head2HeadTable extends Table[Head2HeadTable, Head2Head] with RootConnector {
+abstract class FixtureTable extends Table[FixtureTable, Fixture] with RootConnector {
 
-  override lazy val tableName = "head2head"
+  override lazy val tableName = "fixture"
 
   object homeTeamId extends StringColumn with PartitionKey
 
@@ -25,7 +25,7 @@ abstract class Head2HeadTable extends Table[Head2HeadTable, Head2Head] with Root
 
   object dateCreated extends Col[LocalDateTime] with PrimaryKey
 
-  def saveEntity(entity: Head2Head): Future[ResultSet] = {
+  def saveEntity(entity: Fixture): Future[ResultSet] = {
     insert
       .value(_.homeTeamId, entity.homeTeamId)
       .value(_.awayTeamId, entity.awayTeamId)
@@ -36,7 +36,7 @@ abstract class Head2HeadTable extends Table[Head2HeadTable, Head2Head] with Root
       .future()
   }
 
-  def getHomeTeamMatches(homeTeamId: String): Future[Seq[Head2Head]] = {
+  def getHomeTeamMatches(homeTeamId: String): Future[Seq[Fixture]] = {
     select
       .where(_.homeTeamId eqs homeTeamId)
       .fetchEnumerator() run Iteratee.collect()
@@ -50,7 +50,7 @@ abstract class Head2HeadTable extends Table[Head2HeadTable, Head2Head] with Root
 //  }
 
   // remove in production
-  def deleteEntity(entity: Head2Head): Future[ResultSet] = {
+  def deleteEntity(entity: Fixture): Future[ResultSet] = {
     delete
       .where(_.homeTeamId eqs entity.homeTeamId)
       .future()
