@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 import play.api.libs.json.Json
 
-case class Head2Head(
+case class Fixture(
                       homeTeamId: String,
                       awayTeamId: String,
                       homeTeamGoals: Int,
@@ -13,6 +13,7 @@ case class Head2Head(
                       dateCreated: LocalDateTime = LocalDateTime.now
                     ) {}
 
-object Head2Head {
-  implicit val head2HeadFormat = Json.format[Head2Head]
+
+object Fixture {
+  implicit val head2HeadFormat = Json.format[Fixture]
 }

@@ -10,7 +10,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class CassandraSetupServiceImpl extends CassandraSetupService {
 
   def createMasterTables(): Future[Boolean] = {
-    Head2HeadService.masterImpl.createTable
+    FixtureService.masterImpl.createTable
     TeamService.masterImpl.createTable
     RatingService.masterImpl.createTable
     FormService.masterImpl.createTable
@@ -19,7 +19,7 @@ class CassandraSetupServiceImpl extends CassandraSetupService {
   }
 
   def createPseudomasterTables() = {
-    Head2HeadService.pseudomasterImpl.createTable
+    FixtureService.pseudomasterImpl.createTable
     TeamService.pseudomasterImpl.createTable
     RatingService.pseudomasterImpl.createTable
     FormService.pseudomasterImpl.createTable
