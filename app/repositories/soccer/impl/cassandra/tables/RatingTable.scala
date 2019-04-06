@@ -1,6 +1,6 @@
 package repositories.soccer.impl.cassandra.tables
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 import com.outworkers.phantom.dsl._
 import com.outworkers.phantom.streams._
@@ -17,7 +17,7 @@ abstract class RatingTable extends Table[RatingTable, Rating] with RootConnector
 
   object rating extends DoubleColumn
 
-  object dateCreated extends Col[LocalDateTime] with PrimaryKey
+  object dateCreated extends Col[LocalDate] with PrimaryKey
 
   def saveEntity(rating: Rating): Future[ResultSet] = {
     insert

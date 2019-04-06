@@ -30,16 +30,17 @@ class ProcessLinksActor extends Actor with ActorLogging {
 
 
   override def receive: PartialFunction[Any, Unit] = {
-    case links: LinkMessage =>
-      links.links foreach { link =>
-        val article = /// Some Action Service
-        article map {
-          case Some(data) => persistDataActorProps ! PersistDataActor.PersistMessage(data)
-          case None => {
-           // Log EVEnt or Whatever
-          }
-        }
-      }
+//    case links: LinkMessage =>
+//      links.links foreach { link =>
+//        val article = /// Some Action Service
+//        article map {
+//          case Some(data) => persistDataActorProps ! PersistDataActor.PersistMessage(data)
+//          case None => {
+//           // Log EVEnt or Whatever
+//          }
+//        }
+//      }
+    null
   }
 }
 

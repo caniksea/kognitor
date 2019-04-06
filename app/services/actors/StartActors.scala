@@ -9,12 +9,12 @@ import scala.concurrent.duration._
 
 class StartActors @Inject()(system: ActorSystem)(implicit executionContext: ExecutionContext) {
 
-  val zoneActor = system.actorOf(ProcessInputActor.props, "zone-actor")
+  val feederActor = system.actorOf(FeederActor.props, "feeder-actor")
 
   system.scheduler.schedule(
     initialDelay = 0.microseconds,
     interval = 10.minutes,
-    receiver = zoneActor,
+    receiver = feederActor,
     message = "START"
   )
 

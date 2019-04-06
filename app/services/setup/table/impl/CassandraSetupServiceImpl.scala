@@ -1,6 +1,6 @@
 package services.setup.table.impl
 
-import services.feeder.AppDatasourceService
+import services.feeder.{FixtureFeederService, FormFeederService, RatingFeederService}
 import services.setup.table.CassandraSetupService
 import services.soccer._
 
@@ -15,7 +15,9 @@ class CassandraSetupServiceImpl extends CassandraSetupService {
     RatingService.masterImpl.createTable
     FormService.masterImpl.createTable
 
-    AppDatasourceService.apply.createTable
+    FormFeederService.apply.createTable
+    RatingFeederService.apply.createTable
+    FixtureFeederService.apply.createTable
   }
 
   def createPseudomasterTables() = {

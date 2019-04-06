@@ -1,6 +1,6 @@
 package repositories.soccer.impl.cassandra.tables
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 import com.outworkers.phantom.dsl._
 import com.outworkers.phantom.streams._
@@ -21,7 +21,7 @@ abstract class FormTable extends Table[FormTable, Form] with RootConnector {
 
   object numberOfDraws extends IntColumn
 
-  object dateCreated extends Col[LocalDateTime] with PrimaryKey
+  object dateCreated extends Col[LocalDate] with PrimaryKey
 
   def saveEntity(entity: Form): Future[ResultSet] = {
     insert
