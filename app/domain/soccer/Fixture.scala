@@ -2,6 +2,7 @@ package domain.soccer
 
 import java.time.LocalDateTime
 
+import domain.common.FixtureData
 import play.api.libs.json.Json
 
 case class Fixture(
@@ -9,9 +10,8 @@ case class Fixture(
                       awayTeamId: String,
                       homeTeamGoals: Int,
                       awayTeamGoals: Int,
-                      dateOfCompetition: LocalDateTime,
-                      dateCreated: LocalDateTime = LocalDateTime.now
-                    ) {}
+                      dateOfCompetition: LocalDateTime
+                    ) extends FixtureData {}
 
 
 object Fixture {

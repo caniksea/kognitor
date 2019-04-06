@@ -1,13 +1,14 @@
 package domain.feeder
 
-import domain.soccer.{Fixture, Form}
+import java.time.LocalDateTime
+
 import play.api.libs.json.Json
 
 case class FeederData(
-                     teamName: String,
-                     rating: Double,
-                     form: Form,
-                     fixture: Fixture
+                     ratingFeeders: Seq[RatingFeeder],
+                     formFeeders: Seq[FormFeeder],
+                     fixtureFeeder: Seq[FixtureFeeder],
+                     dateCreated: LocalDateTime = LocalDateTime.now
                      )
 
 object FeederData{

@@ -1,6 +1,6 @@
 package repositories.soccer.impl.cassandra.tables
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 
 import com.outworkers.phantom.dsl._
 import com.outworkers.phantom.streams._
@@ -23,7 +23,7 @@ abstract class FixtureTable extends Table[FixtureTable, Fixture] with RootConnec
 
   object dateOfCompetition extends Col[LocalDateTime]
 
-  object dateCreated extends Col[LocalDateTime] with PrimaryKey
+  object dateCreated extends Col[LocalDate] with PrimaryKey
 
   def saveEntity(entity: Fixture): Future[ResultSet] = {
     insert
