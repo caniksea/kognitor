@@ -22,4 +22,7 @@ class FormFeederServiceImpl extends FormFeederService {
   override def deleteEntity(entity: FormFeeder): Future[Boolean] = ???
 
   override def createTable: Future[Boolean] = FormFeederRepository.apply.createTable
+
+  override def getTeamsForm(teamNames: List[String], date: LocalDate): Future[Seq[FormFeeder]] =
+    FormFeederRepository.apply.getTeamsForm(teamNames, date)
 }

@@ -39,4 +39,11 @@ abstract class FormFeederTable extends Table[FormFeederTable, FormFeeder] with R
       .and(_.dateCreated eqs date)
       .one()
   }
+
+  def getTeamsForm(teamNames: List[String], date: LocalDate): Future[Seq[FormFeeder]] = {
+    select
+      .where(_.teamName in teamNames)
+      .and(_.dateCreated eqs date)
+      .fetchEnumerator() run Iteratee.collect()
+  }
 }

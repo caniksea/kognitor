@@ -10,6 +10,7 @@ import scala.concurrent.Future
 
 trait FixtureFeederService extends CRUDService[FixtureFeeder] {
   def getTeamFixture(teamName: String, date: LocalDate): Future[Option[FixtureFeeder]]
+  def getTeamsFixture(teamList: List[String], date: LocalDate): Future[Seq[FixtureFeeder]]
 }
 
 object FixtureFeederService {

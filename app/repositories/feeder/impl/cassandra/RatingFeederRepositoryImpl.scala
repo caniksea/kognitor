@@ -32,6 +32,9 @@ class RatingFeederRepositoryImpl extends RatingFeederRepository {
 
   override def getTeamRating(teamName: String, date: LocalDate): Future[Option[RatingFeeder]] =
     RatingFeederDatabase.RatingFeederTable.getTeamRating(teamName, date)
+
+  override def getTeamsRating(teamNames: List[String], today: LocalDate): Future[Seq[RatingFeeder]] =
+    RatingFeederDatabase.RatingFeederTable.getTeamsRating(teamNames, today)
 }
 
 class RatingFeederDatabase(override val connector: KeySpaceDef) extends Database[RatingFeederDatabase](connector) {

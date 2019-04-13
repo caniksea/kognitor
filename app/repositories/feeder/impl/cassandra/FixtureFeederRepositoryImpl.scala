@@ -7,6 +7,7 @@ import com.outworkers.phantom.database.Database
 import com.outworkers.phantom.dsl._
 import conf.connections.DataConnection
 import domain.feeder
+import domain.feeder.FixtureFeeder
 import repositories.feeder.FixtureFeederRepository
 import repositories.feeder.impl.cassandra.table.FixtureFeederTable
 
@@ -31,6 +32,9 @@ class FixtureFeederRepositoryImpl extends FixtureFeederRepository {
 
     FixtureFeederDatabase.FixtureFeederTable.create.ifNotExists().future().map(result => result.head.isExhausted())
   }
+
+  override def getTeamsFixture(teamList: List[String], date: LocalDate): Future[Seq[FixtureFeeder]] =
+    FixtureFeederDatabase.FixtureFeederTable.getTeamsFixture(teamList, date)
 }
 
 class FixtureFeederDatabase(override val connector: KeySpaceDef) extends Database[FixtureFeederDatabase](connector) {

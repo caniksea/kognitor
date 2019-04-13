@@ -9,6 +9,7 @@ import repositories.feeder.impl.cassandra.RatingFeederRepositoryImpl
 import scala.concurrent.Future
 
 trait RatingFeederRepository extends CRUDRepository[RatingFeeder] {
+  def getTeamsRating(teamNames: List[String], today: LocalDate): Future[Seq[RatingFeeder]]
   def getTeamRating(teamName: String, date: LocalDate): Future[Option[RatingFeeder]]
 }
 

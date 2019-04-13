@@ -9,6 +9,8 @@ import repositories.feeder.impl.cassandra.FormFeederRepositoryImpl
 import scala.concurrent.Future
 
 trait FormFeederRepository extends CRUDRepository[FormFeeder] {
+  def getTeamsForm(teamNames: List[String], date: LocalDate): Future[Seq[FormFeeder]]
+
   def getTeamForm(teamName: String, date: LocalDate): Future[Option[FormFeeder]]
 }
 

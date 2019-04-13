@@ -9,6 +9,8 @@ import services.feeder.impl.RatingFeederServiceImpl
 import scala.concurrent.Future
 
 trait RatingFeederService extends CRUDService[RatingFeeder] {
+  def getTeamsRating(teamNames: List[String], today: LocalDate): Future[Seq[RatingFeeder]]
+
   def getTeamRating(teamName: String, date: LocalDate): Future[Option[RatingFeeder]]
 }
 
