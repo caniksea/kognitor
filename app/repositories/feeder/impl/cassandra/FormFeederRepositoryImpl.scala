@@ -31,6 +31,9 @@ class FormFeederRepositoryImpl extends FormFeederRepository {
 
     FormFeederDatabase.FormFeederTable.create.ifNotExists().future().map(result => result.head.isExhausted())
   }
+
+  override def getTeamsForm(teamNames: List[String], date: LocalDate): Future[Seq[FormFeeder]] =
+    FormFeederDatabase.FormFeederTable.getTeamsForm(teamNames, date)
 }
 
 class FormFeederDatabase(override val connector: KeySpaceDef) extends Database[FormFeederDatabase](connector) {

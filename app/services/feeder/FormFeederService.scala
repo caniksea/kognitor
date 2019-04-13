@@ -9,6 +9,8 @@ import services.feeder.impl.FormFeederServiceImpl
 import scala.concurrent.Future
 
 trait FormFeederService extends CRUDService[FormFeeder] {
+  def getTeamsForm(teamNames: List[String], date: LocalDate): Future[Seq[FormFeeder]]
+
   def getTeamForm(teamName: String, date: LocalDate): Future[Option[FormFeeder]]
 }
 

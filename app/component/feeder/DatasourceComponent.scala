@@ -2,57 +2,36 @@ package component.feeder
 
 import java.time.LocalDate
 
-import domain.feeder.{FeederData}
+import domain.feeder.{FixtureFeeder, FormFeeder, RatingFeeder}
 import domain.soccer.Team
 import services.feeder.{FixtureFeederService, FormFeederService, RatingFeederService}
 import services.soccer.TeamService
 
+import scala.collection.mutable
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object DatasourceComponent {
 
+  def getFormData(teamList: Seq[Team]): Future[Seq[FormFeeder]] = {
+    val teamNames = getTeamNames(teamList)
+    FormFeederService.apply.getTeamsForm(teamNames, today)
+  }
+
+  def getTeamNames(teamList: Seq[Team]): List[String] = teamList.map(team => team.teamName).toList
+
+  def getFixtureData(teamList: Seq[Team]): Future[Seq[FixtureFeeder]] = {
+    val teamNames: List[String] = getTeamNames(teamList)
+    FixtureFeederService.apply.getTeamsFixture(teamNames, today);
+  }
+
+  def getTeams: Future[Seq[Team]] = TeamService.masterImpl.getEntities
+
+  def getRatingData(teamList: Seq[Team]): Future[Seq[RatingFeeder]] = {
+    val teamNames = getTeamNames(teamList)
+    RatingFeederService.apply.getTeamsRating(teamNames, today)
+  }
+
   val today = LocalDate.now
-
-  def getTeamRating(teamName: String) = {
-    RatingFeederService.apply.getTeamRating(teamName, today)
-  }
-
-  def getTeamsRating(teamList: Seq[Team]) = {
-    for {
-      team <- teamList
-    } yield {
-      getTeamRating(team.teamName)
-    }
-  }
-
-  def getTeamsForm(teamList: Seq[Team]) = {
-    for {
-      team <- teamList
-    } yield {
-      FormFeederService.apply.getTeamForm(team.teamName, today)
-    }
-  }
-
-  def getTeamsFixture(teamList: Seq[Team]) = {
-    for {
-      team <- teamList
-    } yield {
-      FixtureFeederService.apply.getTeamFixture(team.teamName, today)
-    }
-  }
-
-  def getData(): Future[Seq[FeederData]] = {
-    val teams: Future[Seq[Team]] = TeamService.masterImpl.getEntities
-    for {
-      teamList <- teams
-    } yield {
-      val teamsRating = getTeamsRating(teamList)
-      val teamsForm = getTeamsForm(teamList)
-      val teamsFixture = getTeamsFixture(teamList)
-    }
-
-    null
-  }
 
 }

@@ -22,4 +22,7 @@ class FixtureFeederServiceImpl extends FixtureFeederService {
   override def deleteEntity(entity: FixtureFeeder): Future[Boolean] = ???
 
   override def createTable: Future[Boolean] = FixtureFeederRepository.apply.createTable
+
+  override def getTeamsFixture(teamList: List[String], date: LocalDate): Future[Seq[FixtureFeeder]] =
+    FixtureFeederRepository.apply.getTeamsFixture(teamList, date)
 }

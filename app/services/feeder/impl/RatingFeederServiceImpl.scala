@@ -21,4 +21,7 @@ class RatingFeederServiceImpl extends RatingFeederService {
   override def createTable: Future[Boolean] = RatingFeederRepository.apply.createTable
 
   override def getTeamRating(teamName: String, date: LocalDate): Future[Option[RatingFeeder]] = RatingFeederRepository.apply.getTeamRating(teamName, date)
+
+  override def getTeamsRating(teamNames: List[String], today: LocalDate): Future[Seq[RatingFeeder]] =
+    RatingFeederRepository.apply.getTeamsRating(teamNames, today)
 }

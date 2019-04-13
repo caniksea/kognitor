@@ -34,4 +34,11 @@ abstract class RatingFeederTable extends Table[RatingFeederTable, RatingFeeder] 
       .one()
   }
 
+  def getTeamsRating(teamNames: List[String], date: LocalDate): Future[Seq[RatingFeeder]] = {
+    select
+      .where(_.teamName in teamNames)
+      .and(_.dateCreated eqs date)
+      .fetchEnumerator() run Iteratee.collect()
+  }
+
 }

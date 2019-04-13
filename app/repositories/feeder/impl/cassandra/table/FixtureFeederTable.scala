@@ -43,4 +43,11 @@ abstract class FixtureFeederTable extends Table[FixtureFeederTable, FixtureFeede
       .one()
   }
 
+  def getTeamsFixture(teamSea: List[String], date: time.LocalDate): Future[Seq[FixtureFeeder]] = {
+    select
+      .where(_.teamName in teamSea)
+      .and(_.dateCreated eqs date)
+      .fetchEnumerator() run Iteratee.collect()
+  }
+
 }
