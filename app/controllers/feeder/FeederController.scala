@@ -23,7 +23,6 @@ class FeederController @Inject()(cc: ControllerComponents)(implicit ec: Executio
 
   def saveForm(input: JsValue): Future[Result] = {
     val entity = Json.fromJson[FormFeeder](input).get
-    println("saving form feeder:: ", entity)
     val response = for {
       result <- FormFeederService.apply.saveEntity(entity)
     } yield result
@@ -35,7 +34,6 @@ class FeederController @Inject()(cc: ControllerComponents)(implicit ec: Executio
 
   def saveRating(input: JsValue): Future[Result] = {
     val entity = Json.fromJson[RatingFeeder](input).get
-    println("saving rating feeder:: ", entity)
     val response = for {
       result <- RatingFeederService.apply.saveEntity(entity)
     } yield result
@@ -47,7 +45,7 @@ class FeederController @Inject()(cc: ControllerComponents)(implicit ec: Executio
 
   def add(entity: String): Action[JsValue] = Action.async(parse.json) {
     implicit request =>
-      var input = request.body
+      val input = request.body
       entity.toLowerCase match {
         case "fixture" => saveFixture(input)
         case "form" => saveForm(input)
