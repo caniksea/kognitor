@@ -19,3 +19,4 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 ->      /setup                      controllers.setup.table.TableSetupRouter
 ->      /learning                   controllers.learning.LearningRouter
 ->      /soccer                     controllers.soccer.SoccerRouter
+->      /feeder                     controllers.feeder.FeederRouter
