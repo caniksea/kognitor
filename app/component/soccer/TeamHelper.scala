@@ -6,7 +6,7 @@ class TeamHelper {
 
   def observeForm(model: Model, form: Option[Boolean]) {
     form match {
-      case Some(b) => model.isInForm.observe(b)
+      case Some(b) => model.hasGoodForm.observe(b)
       case None => ()
     }
   }

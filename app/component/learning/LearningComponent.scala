@@ -4,13 +4,30 @@ import com.cra.figaro.algorithm.learning.EMWithBP
 import component.soccer.TeamHelper
 import component.{LearningModel, Model, PostParameters, PriorParameters}
 import domain.learning.LearningResponse
-import domain.soccer.{Form, Fixture, TeamProbability}
-import services.soccer.{FormService, FixtureService, TeamProbabilityService}
+import domain.soccer.{Fixture, Form, Team, TeamProbability}
+import services.soccer.{FixtureService, FormService, TeamProbabilityService, TeamService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object LearningComponent {
+
+  def processLearnForTeams(teams: Seq[Team]): Future[Seq[LearningResponse]] = {
+    println(teams)
+    val s = teams.map(team => learn(team.teamId)) // this produces a sequence of futures
+    Future.sequence(s) // this converts the sequence of futures into future of sequence
+  }
+
+
+  def learnForAll: Future[Seq[LearningResponse]] =
+    for {
+      teams <- TeamService.masterImpl.getEntities
+      learnings <- processLearnForTeams(teams)
+    } yield {
+      println(learnings)
+      learnings
+    }
+
 
   def getPriorParams = new PriorParameters
 
@@ -43,6 +60,14 @@ object LearningComponent {
     val (wins, loses) = getWinsnLoses(teamH2H)
     val winLabelSize = if (wins.size / 3 < h2hMaxLabelLength) h2hMaxLabelLength else wins.size / 3
     val losesLabelSize = if (loses.size / 3 < h2hMaxLabelLength) h2hMaxLabelLength else loses.size / 3
+
+    //TODO: remove later
+    println("h2hMaxLabelLength", h2hMaxLabelLength)
+    println("wins.size", wins.size)
+    println("winLabelSize", winLabelSize)
+    println("loses.size", loses.size)
+    println("losesLabelSize", losesLabelSize)
+    println("wins.size", wins.size)
 
     val labeledWins = wins.take(winLabelSize)
     val labeledLoses = loses.take(losesLabelSize)
@@ -86,6 +111,9 @@ object LearningComponent {
 
   def learnModels(teamH2H: Seq[Fixture], teamForms: Seq[Form]) = {
 
+    println("Head2Heads: ", teamH2H)
+    println("Forms: ", teamForms)
+
     val models: Seq[Model] = learnHomeAdv(teamH2H)
 
     learnForm(models, teamForms)
@@ -96,40 +124,75 @@ object LearningComponent {
     FormService.masterImpl.getTeamForms(teamId)
 
   def saveResult(teamProbabilities: TeamProbability) =
-    TeamProbabilityService.batchViewImpl.saveEntity(teamProbabilities)
+    for {
+      batchSave <- TeamProbabilityService.batchViewImpl.saveEntity(teamProbabilities)
+      rtSave <- TeamProbabilityService.realtimeViewImpl.saveEntity(teamProbabilities)
+    } yield {
+      if (batchSave) println("Saved in batch db")
+      if (rtSave) println("Saved in real time db")
+      batchSave && rtSave
+    }
+
+  def findTeam(teamId: String) = {
+    for {
+      team <- TeamService.masterImpl.getEntity(teamId)
+    } yield {
+      team
+    }
+  }
+
+  def processLearn(team: Option[Team], id: String) = {
+    team match {
+      case Some(t) => {
+        val models = for {
+          teamH2H <- getTeamMatches(t.teamId)
+          teamForms <-getTeamForms(t.teamId)
+        } yield{
+          learnModels(teamH2H, teamForms)
+        }
+        models.map( model => {
+          val result = learnMAP(new PriorParameters)
+          val teamProbabilities =
+            TeamProbability(t.teamId, result.winProbability, result.goodRatingProbability, result.badRatingProbability,
+              result.goodFormProbability, result.badFormProbability, result.goodHead2HeadProbability, result.badHead2HeadProbability)
+          // Save parameters before returning.
+          saveResult(teamProbabilities)
+          new LearningResponse(true, "Learning completed for team with id: " + t.teamId, teamProbabilities)
+        })
+      }
+      case None => Future {new LearningResponse(false, "Can't find team with id: " + id)}
+    }
+  }
 
   /**
     * starting point. Should learn for all teams in the db
+    *
     * @param teamId
     * @return
     */
   def learn(teamId: String): Future[LearningResponse] = {
-    val models = for {
-      teamH2H <- getTeamMatches(teamId)
-      teamForms <-getTeamForms(teamId)
-    } yield{
-      learnModels(teamH2H, teamForms)
+    val team = findTeam(teamId)
+    for {
+      team <- findTeam(teamId)
+      response <- processLearn(team, teamId)
+    } yield {
+      response
     }
-    models.map( model => {
-      val result = learnMAP(new PriorParameters)
-      val teamProbabilities = new TeamProbability(teamId, result.head2headHomeWinsProbability,
-        result.ratingProbability, result.formProbability)
-      // Save parameters before returning.
-      saveResult(teamProbabilities)
-      new LearningResponse(true, "Learning completed", teamProbabilities)
-    })
-
   }
 
 
   def learnMAP(parameters: PriorParameters): PostParameters = {
-    val algorithm = EMWithBP(parameters.probabilities._1: _*)
+    val algorithm = EMWithBP(parameters.probabilities: _*)
     algorithm.start()
-    val head2headHomeWinProbability = parameters.head2headHomeWinsProbability.MAPValue
-    val formProbability = parameters.formProbability.MAPValue
-    val ratingProbability = parameters.probabilities._2.generateRandomness()
+    val winProbability = parameters.winProbability.MAPValue
+    val goodRatingProbability = parameters.goodRatingProbability.MAPValue
+    val badRatingProbability = parameters.badRatingProbability.MAPValue
+    val goodFormProbability = parameters.goodFormProbability.MAPValue
+    val badFormProbability = parameters.badFormProbability.MAPValue
+    val goodHead2HeadProbability = parameters.goodHead2HeadProbability.MAPValue
+    val badHead2HeadProbability = parameters.badHead2HeadProbability.MAPValue
     algorithm.kill()
-    new PostParameters(head2headHomeWinProbability, formProbability, ratingProbability)
+    new PostParameters(winProbability, goodRatingProbability, badRatingProbability, goodFormProbability, badFormProbability, goodHead2HeadProbability, badHead2HeadProbability)
   }
 
 }

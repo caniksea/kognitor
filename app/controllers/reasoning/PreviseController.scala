@@ -16,7 +16,9 @@ class PreviseController @Inject()(cc: ControllerComponents)(implicit ec: Executi
       val response: Future[PreviseResult] = PreviseService.apply.previse(entity)
       response.map(ans => Ok(Json.toJson(ans)))
         .recover{
-          case otherException: Exception => InternalServerError
+          case exception: Exception => {
+            println(exception.getMessage); exception.printStackTrace; InternalServerError
+          }
         }
   }
 }

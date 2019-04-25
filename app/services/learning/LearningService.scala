@@ -6,7 +6,8 @@ import services.learning.impl.LearningServiceImpl
 import scala.concurrent.Future
 
 trait LearningService {
-  def Learn(teamId: String): Future[LearningResponse]
+  def learn(teamId: String): Future[LearningResponse]
+  def learnForAll: Future[Seq[LearningResponse]]
 }
 
 object LearningService {
