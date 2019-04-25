@@ -13,7 +13,7 @@ class DatasourceServiceImpl extends DatasourceService {
   override def getFormData(teamList: Seq[Team]): Future[Seq[FormFeeder]] =
     DatasourceComponent.getFormData(teamList)
 
-  override def getTeams: Future[Seq[Team]] = DatasourceComponent.getTeams;
+  override def getTeams: Future[Seq[Team]] = DatasourceComponent.getTeams
 
   override def getFixtureData(teamList: Seq[Team]): Future[Seq[FixtureFeeder]] = DatasourceComponent.getFixtureData(teamList)
 }

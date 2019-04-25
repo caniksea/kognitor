@@ -13,18 +13,30 @@ abstract class TeamProbabilityTable extends Table[TeamProbabilityTable, TeamProb
 
   object teamId extends StringColumn with PartitionKey
 
-  object head2headHomeWinsProbability extends DoubleColumn
+  object winProbability extends DoubleColumn
 
-  object ratingProbability extends DoubleColumn
+  object goodRatingProbability extends DoubleColumn
 
-  object formProbability extends DoubleColumn
+  object badRatingProbability extends DoubleColumn
+
+  object goodFormProbability extends DoubleColumn
+
+  object badFormProbability extends DoubleColumn
+
+  object goodHead2HeadProbability extends DoubleColumn
+
+  object badHead2HeadProbability extends DoubleColumn
 
   def saveEntity(entity: TeamProbability): Future[ResultSet] = {
     insert
       .value(_.teamId, entity.teamId)
-      .value(_.head2headHomeWinsProbability, entity.head2headHomeWinsProbability)
-      .value(_.ratingProbability, entity.ratingProbability)
-      .value(_.formProbability, entity.formProbability)
+      .value(_.winProbability, entity.winProbability)
+      .value(_.goodRatingProbability, entity.goodRatingProbability)
+      .value(_.badRatingProbability, entity.badRatingProbability)
+      .value(_.goodFormProbability, entity.goodFormProbability)
+      .value(_.badFormProbability, entity.badFormProbability)
+      .value(_.goodHead2HeadProbability, entity.goodHead2HeadProbability)
+      .value(_.badHead2HeadProbability, entity.badHead2HeadProbability)
       .future()
   }
 

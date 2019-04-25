@@ -8,5 +8,6 @@ import play.api.routing.sird._
 class LearningRouter @Inject() (learningController: LearningController) extends SimpleRouter {
   override def routes: Routes = {
     case GET(p"/learn/$teamId") => learningController.learn(teamId)
+    case GET(p"/all") => learningController.learnForAll()
   }
 }

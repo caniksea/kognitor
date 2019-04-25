@@ -7,6 +7,8 @@ import services.learning.LearningService
 import scala.concurrent.Future
 
 class LearningServiceImpl extends LearningService {
-  override def Learn(teamId: String): Future[LearningResponse] =
+  override def learn(teamId: String): Future[LearningResponse] =
     LearningComponent.learn(teamId)
+
+  override def learnForAll: Future[Seq[LearningResponse]] = LearningComponent.learnForAll
 }

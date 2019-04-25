@@ -1,5 +1,6 @@
 package services.soccer.impl.pseudomaster
 
+import component.soccer.SoccerComponent
 import domain.soccer.Team
 import repositories.soccer.TeamRepository
 import services.soccer.TeamService
@@ -21,4 +22,6 @@ class TeamServiceImpl extends TeamService {
 
   override def deleteEntity(entity: Team): Future[Boolean] =
     TeamRepository.pseudomasterImpl.deleteEntity(entity)
+
+  override def findByName(teamName: String): Future[Option[Team]] = SoccerComponent.findByName(teamName, TeamService.pseudomasterImpl)
 }
