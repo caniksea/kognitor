@@ -1,6 +1,6 @@
 package repositories.soccer.impl.cassandra.tables
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime}
 
 import com.outworkers.phantom.dsl._
 import com.outworkers.phantom.streams._
@@ -21,7 +21,9 @@ abstract class FormTable extends Table[FormTable, Form] with RootConnector {
 
   object numberOfDraws extends IntColumn
 
-  object dateCreated extends Col[LocalDate] with PrimaryKey
+  object sourceDate extends Col[LocalDate] with PrimaryKey
+
+  object dateCreated extends Col[LocalDateTime]
 
   def saveEntity(entity: Form): Future[ResultSet] = {
     insert
@@ -29,6 +31,7 @@ abstract class FormTable extends Table[FormTable, Form] with RootConnector {
       .value(_.numberOfWins, entity.numberOfWins)
       .value(_.numberOfLoses, entity.numberOfLoses)
       .value(_.numberOfDraws, entity.numberOfDraws)
+      .value(_.sourceDate, entity.sourceDate)
       .value(_.dateCreated, entity.dateCreated)
       .future()
   }
@@ -48,6 +51,10 @@ abstract class FormTable extends Table[FormTable, Form] with RootConnector {
     delete
       .where(_.teamId eqs entity.teamId)
       .future()
+  }
+
+  def clear: Future[ResultSet] = {
+    truncate.future()
   }
 
 }

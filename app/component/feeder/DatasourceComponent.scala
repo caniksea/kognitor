@@ -32,6 +32,6 @@ object DatasourceComponent {
     RatingFeederService.apply.getTeamsRating(teamNames, today)
   }
 
-  val today = LocalDate.now
+  val today = LocalDate.parse("2019-04-24")
 
 }

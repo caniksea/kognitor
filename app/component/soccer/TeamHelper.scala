@@ -4,16 +4,14 @@ import component.Model
 
 class TeamHelper {
 
-  def observeForm(model: Model, form: Option[Boolean]) {
-    form match {
-      case Some(b) => model.hasGoodForm.observe(b)
+  def observeEvidence(model: Model, hasHGA: Option[Boolean], hasForm: Option[Boolean]) {
+    hasForm match {
+      case Some(value) => model.hasGoodForm.observe(value)
       case None => ()
     }
-  }
 
-  def observeHomeGroundAdv(model: Model, isWin: Option[Boolean]) {
-    isWin match {
-      case Some(b) => model.hasHomeGroundAdvantage.observe(b)
+    hasHGA match {
+      case Some(value) => model.hasHomeGroundAdvantage.observe(value)
       case None => ()
     }
   }

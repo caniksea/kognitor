@@ -56,4 +56,8 @@ abstract class FixtureTable extends Table[FixtureTable, Fixture] with RootConnec
       .future()
   }
 
+  def clear: Future[ResultSet] = {
+    truncate.future()
+  }
+
 }

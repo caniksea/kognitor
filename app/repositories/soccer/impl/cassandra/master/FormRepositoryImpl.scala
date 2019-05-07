@@ -31,6 +31,8 @@ class FormRepositoryImpl extends FormRepository {
     FormDatabase.FormTable.create.ifNotExists().future().map(result => result.head.isExhausted())
 
   }
+
+  override def clear: Future[Boolean] = ???
 }
 
 class FormDatabase(override val connector: KeySpaceDef) extends Database[FormDatabase](connector) {

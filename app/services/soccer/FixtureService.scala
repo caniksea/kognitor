@@ -9,6 +9,7 @@ import scala.concurrent.Future
 trait FixtureService extends CRUDService[Fixture] {
 
   def getHomeTeamMatches(homeTeamId: String): Future[Seq[Fixture]]
+  def clear: Future[Boolean]
 }
 
 object FixtureService {

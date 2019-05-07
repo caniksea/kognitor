@@ -28,7 +28,7 @@ class FeederController @Inject()(cc: ControllerComponents)(implicit ec: Executio
     } yield result
     response.map(ans => Ok(Json.toJson(ans)))
       .recover{
-        case exception: Exception => InternalServerError
+        case exception: Exception => InternalServerError(exception.getMessage)
       }
   }
 
