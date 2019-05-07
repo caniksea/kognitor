@@ -24,4 +24,6 @@ class FormServiceImpl extends FormService {
 
   override def deleteEntity(entity: Form): Future[Boolean] =
     FormRepository.pseudomasterImpl.deleteEntity(entity)
+
+  override def clear: Future[Boolean] = FormRepository.pseudomasterImpl.clear
 }

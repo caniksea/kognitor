@@ -52,9 +52,10 @@ object DataInjectionComponent {
 
   def processFormSave(teams: Seq[Team], teamsForm: Seq[FormFeeder]) = {
     teamsForm.foreach(teamForm => {
-      val team: Team = teams.filter(team => team.teamName.trim.toLowerCase == teamForm.teamName.trim.toLowerCase).head
+      val team: Team = teams.find(team => team.teamName.trim.equalsIgnoreCase(teamForm.teamName.trim)).getOrElse(null)
+//      val team: Team = teams.filter(team => team.teamName.trim.toLowerCase == teamForm.teamName.trim.toLowerCase).head
       if (team != null) {
-        val form: Form = Form(team.teamId, teamForm.numberOfWins, teamForm.numberOfLoses, teamForm.numberOfDraws)
+        val form: Form = Form(team.teamId, teamForm.numberOfWins, teamForm.numberOfLoses, teamForm.numberOfDraws, teamForm.sourceDate)
         FormService.masterImpl.saveEntity(form)
         FormService.pseudomasterImpl.saveEntity(form)
       }

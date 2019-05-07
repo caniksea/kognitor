@@ -1,5 +1,7 @@
 package domain.feeder
 
+import java.time.LocalDate
+
 import domain.common.FormData
 import play.api.libs.json.Json
 
@@ -7,7 +9,8 @@ case class FormFeeder(
                        teamName: String,
                        numberOfWins: Int,
                        numberOfLoses: Int,
-                       numberOfDraws: Int
+                       numberOfDraws: Int,
+                       override val sourceDate: LocalDate
                      ) extends FormData {}
 
 object FormFeeder {

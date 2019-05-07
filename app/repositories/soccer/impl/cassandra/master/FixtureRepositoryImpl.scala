@@ -13,10 +13,10 @@ import scala.concurrent.Future
 class FixtureRepositoryImpl extends FixtureRepository{
 
   override def saveEntity(entity: Fixture): Future[Boolean] =
-    Head2HeadDatabase.FixtureTable$.saveEntity(entity).map(result => result.isExhausted())
+    FixtureDatabase.FixtureTable.saveEntity(entity).map(result => result.isExhausted())
 
   override def getHomeTeamMatches(homeTeamId: String): Future[Seq[Fixture]] =
-    Head2HeadDatabase.FixtureTable$.getHomeTeamMatches(homeTeamId)
+    FixtureDatabase.FixtureTable.getHomeTeamMatches(homeTeamId)
 
   override def getEntity(id: String): Future[Option[Fixture]] = ???
 
@@ -27,15 +27,17 @@ class FixtureRepositoryImpl extends FixtureRepository{
 
     implicit def session: Session = DataConnection.masterConnector.session
 
-    Head2HeadDatabase.FixtureTable$.create.ifNotExists().future().map(result => result.head.isExhausted())
+    FixtureDatabase.FixtureTable.create.ifNotExists().future().map(result => result.head.isExhausted())
   }
 
   override def deleteEntity(entity: Fixture): Future[Boolean] =
-    Head2HeadDatabase.FixtureTable$.deleteEntity(entity).map(result => result.isExhausted())
+    FixtureDatabase.FixtureTable.deleteEntity(entity).map(result => result.isExhausted())
+
+  override def clear: Future[Boolean] = ???
 }
 
-class Head2HeadDatabase(override val connector: KeySpaceDef) extends Database[Head2HeadDatabase](connector) {
-  object FixtureTable$ extends FixtureTable with connector.Connector
+class FixtureDatabase(override val connector: KeySpaceDef) extends Database[FixtureDatabase](connector) {
+  object FixtureTable extends FixtureTable with connector.Connector
 }
 
-object Head2HeadDatabase extends Head2HeadDatabase(DataConnection.masterConnector)
+object FixtureDatabase extends FixtureDatabase(DataConnection.masterConnector)

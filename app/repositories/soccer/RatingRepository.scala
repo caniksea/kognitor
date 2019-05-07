@@ -9,6 +9,7 @@ import scala.concurrent.Future
 trait RatingRepository extends CRUDRepository[Rating] {
 
   def getTeamRatings(teamId: String): Future[Seq[Rating]]
+  def clear: Future[Boolean]
 }
 
 object RatingRepository {

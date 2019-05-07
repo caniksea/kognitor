@@ -8,6 +8,7 @@ import scala.concurrent.Future
 
 trait FormRepository extends CRUDRepository[Form] {
   def getTeamForms(teamId: String): Future[Seq[Form]]
+  def clear: Future[Boolean]
 }
 
 object FormRepository {

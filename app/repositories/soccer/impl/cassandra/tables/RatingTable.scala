@@ -40,4 +40,8 @@ abstract class RatingTable extends Table[RatingTable, Rating] with RootConnector
       .future()
   }
 
+  def clear: Future[ResultSet] = {
+    truncate.future()
+  }
+
 }

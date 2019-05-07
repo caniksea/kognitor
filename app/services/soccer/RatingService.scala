@@ -8,6 +8,7 @@ import scala.concurrent.Future
 
 trait RatingService extends CRUDService[Rating]{
   def getTeamRatings(teamId: String): Future[Seq[Rating]]
+  def clear: Future[Boolean]
 }
 
 object RatingService {

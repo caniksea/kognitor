@@ -35,9 +35,11 @@ class FeederActor extends Actor with ActorLogging {
       teamsRating <- DatasourceService.apply.getRatingData(teamList)
       teamsForm <- DatasourceService.apply.getFormData(teamList)
     } yield {
+      println(teamList, teamsFixture)
       persistDataActorActorRef ! PersistDataActor.PersistFixtures(teamsFixture)
       persistDataActorActorRef ! PersistDataActor.PersistRatings(teamsRating)
       persistDataActorActorRef ! PersistDataActor.PersistForms(teamsForm)
+      persistDataActorActorRef ! PersistDataActor.RTLearn("rt")
     }
   }
 
