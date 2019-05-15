@@ -3,12 +3,10 @@ package services.feeder
 import domain.feeder.{FixtureFeeder, FormFeeder, RatingFeeder}
 import services.feeder.impl.DataInjectionServiceImpl
 
+import scala.concurrent.Future
+
 trait DataInjectionService {
-  def saveTeamsRating(ratings: Seq[RatingFeeder])
-
-  def saveTeamsFixture(fixtures: Seq[FixtureFeeder])
-
-  def saveTeamsForm(teamsForm: Seq[FormFeeder])
+  def saveData(fixtures: Seq[FixtureFeeder], forms: Seq[FormFeeder], ratings: Seq[RatingFeeder]): Future[Seq[String]]
 }
 
 object DataInjectionService {

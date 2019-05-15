@@ -10,8 +10,7 @@ case class Form(
                  numberOfWins: Int,
                  numberOfLoses: Int,
                  numberOfDraws: Int,
-                 override val sourceDate: LocalDate,
-                 dateCreated: LocalDateTime = LocalDateTime.now
+                 override val dateCreated: LocalDate
           ) extends FormData {}
 
 object Form {

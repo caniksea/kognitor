@@ -4,10 +4,9 @@ import component.feeder.DataInjectionComponent
 import domain.feeder.{FixtureFeeder, FormFeeder, RatingFeeder}
 import services.feeder.DataInjectionService
 
+import scala.concurrent.Future
+
 class DataInjectionServiceImpl extends DataInjectionService {
-  override def saveTeamsForm(teamsForm: Seq[FormFeeder]): Unit = DataInjectionComponent.saveTeamsForm(teamsForm)
-
-  override def saveTeamsRating(ratings: Seq[RatingFeeder]): Unit = DataInjectionComponent.saveTeamsRating(ratings)
-
-  override def saveTeamsFixture(fixtures: Seq[FixtureFeeder]): Unit = DataInjectionComponent.saveTeamsFixture(fixtures)
+  override def saveData(fixtures: Seq[FixtureFeeder], forms: Seq[FormFeeder], ratings: Seq[RatingFeeder]): Future[Seq[String]] =
+    DataInjectionComponent.saveData(fixtures, forms, ratings)
 }

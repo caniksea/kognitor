@@ -8,13 +8,15 @@ import scala.concurrent.Future
 
 trait DatasourceService {
 
-  def getFixtureData(teamList: Seq[Team]): Future[Seq[FixtureFeeder]]
+//  def getFixtureData(teamList: Seq[Team]): Future[Seq[FixtureFeeder]]
 
-  def getTeams: Future[Seq[Team]]
+//  def getTeams: Future[Seq[Team]]
 
-  def getRatingData(teamList: Seq[Team]): Future[Seq[RatingFeeder]]
+//  def getRatingData(teamList: Seq[Team]): Future[Seq[RatingFeeder]]
 
-  def getFormData(teamList: Seq[Team]): Future[Seq[FormFeeder]]
+//  def getFormData(teamList: Seq[Team]): Future[Seq[FormFeeder]]
+
+  def getData: Future[(Seq[FixtureFeeder], Seq[FormFeeder], Seq[RatingFeeder])]
 }
 
 object DatasourceService {

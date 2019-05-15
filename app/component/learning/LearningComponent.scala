@@ -1,10 +1,10 @@
 package component.learning
 
-import com.cra.figaro.algorithm.learning.EMWithBP
+import com.cra.figaro.algorithm.learning.{EMWithBP, EMWithMH, EMWithVE}
 import component.soccer.TeamHelper
 import component.{LearningModel, Model, PostParameters, PriorParameters}
 import domain.learning.LearningResponse
-import domain.soccer.{Fixture, Form, Team, TeamProbability}
+import domain.soccer.{Fixture, Form, Rating, Team, TeamProbability}
 import services.soccer.{FixtureService, FormService, RatingService, TeamProbabilityService, TeamService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -15,7 +15,7 @@ object LearningComponent {
   val BATCH = "bt"
   val REALTIME = "rt"
 
-  def getPriorParams = new PriorParameters
+  val PARAMS = new PriorParameters
 
   /**
     * Iterate throught the team seq and learn on each to produce a future of sequence
@@ -124,16 +124,16 @@ object LearningComponent {
   }
 
   def getTeamMatches(teamId: String, target: String) =
-    if (target.equals(BATCH))
-      FixtureService.masterImpl.getHomeTeamMatches(teamId)
-    else
-      FixtureService.pseudomasterImpl.getHomeTeamMatches(teamId)
+    if (target.equals(BATCH)) FixtureService.masterImpl.getHomeTeamMatches(teamId)
+    else FixtureService.pseudomasterImpl.getHomeTeamMatches(teamId)
 
   def getTeamForms(teamId: String, target: String) =
-    if (target.equals(BATCH))
-      FormService.masterImpl.getTeamForms(teamId)
-    else
-      FormService.pseudomasterImpl.getTeamForms(teamId)
+    if (target.equals(BATCH)) FormService.masterImpl.getTeamForms(teamId)
+    else FormService.pseudomasterImpl.getTeamForms(teamId)
+
+  def getTeamRatings(teamId: String, target: String) =
+    if (target.equals(BATCH)) RatingService.masterImpl.getTeamRatings(teamId)
+    else RatingService.pseudomasterImpl.getTeamRatings(teamId)
 
   def getFixtureLabels(teamH2H: Seq[Fixture]) = {
     val oneThird = teamH2H.size / 3
@@ -162,22 +162,38 @@ object LearningComponent {
     }
   }
 
+  def labelData[A](positive: Seq[A], negative: Seq[A], maxSize: Int): (Seq[A], Seq[A]) = {
+    val oneThirdPositive = positive.size / 3
+    val positiveSize = if (oneThirdPositive == 0) positive.size else oneThirdPositive
+    val positiveLabelSize = if (positiveSize < maxSize) maxSize else positiveSize
+
+    val oneThirdNegative = negative.size / 3
+    val negativeSize = if (oneThirdNegative == 0) negative.size else oneThirdNegative
+    val negativeLabelSize = if (negativeSize < maxSize) maxSize else negativeSize
+
+    val labeledPositives = positive.take(positiveLabelSize)
+    val labeledNegatives = negative.take(negativeLabelSize)
+    (labeledPositives, labeledNegatives)
+  }
+
   def getFormLabels(teamForms: Seq[Form]) = {
     val oneThird = teamForms.size / 3
     val formLabelMaxLength = if (oneThird == 0) teamForms.size else oneThird
 
     val (goodForms, badForms) = getGoodnBadForms(teamForms)
 
-    val oneThirdGoodForms = goodForms.size / 3
-    val goodFormSize = if (oneThirdGoodForms == 0) goodForms.size else oneThirdGoodForms
-    val goodFormLabelSize = if (goodFormSize < formLabelMaxLength) formLabelMaxLength else goodFormSize
+    val (labeledGoodForms, labeledBadForms) = labelData(goodForms, badForms, formLabelMaxLength)
 
-    val oneThirdBadForms = badForms.size / 3
-    val badFormSize = if (oneThirdBadForms == 0) badForms.size else oneThirdBadForms
-    val badFormLabelSize = if (badFormSize < formLabelMaxLength) formLabelMaxLength else badFormSize
-
-    val labeledGoodForms = goodForms.take(goodFormLabelSize)
-    val labeledBadForms = badForms.take(badFormLabelSize)
+//    val oneThirdGoodForms = goodForms.size / 3
+//    val goodFormSize = if (oneThirdGoodForms == 0) goodForms.size else oneThirdGoodForms
+//    val goodFormLabelSize = if (goodFormSize < formLabelMaxLength) formLabelMaxLength else goodFormSize
+//
+//    val oneThirdBadForms = badForms.size / 3
+//    val badFormSize = if (oneThirdBadForms == 0) badForms.size else oneThirdBadForms
+//    val badFormLabelSize = if (badFormSize < formLabelMaxLength) formLabelMaxLength else badFormSize
+//
+//    val labeledGoodForms = goodForms.take(goodFormLabelSize)
+//    val labeledBadForms = badForms.take(badFormLabelSize)
 
     for {
       form <- teamForms
@@ -188,22 +204,23 @@ object LearningComponent {
     }
   }
 
-  def learnOnLabels(fixtureLabel: Option[Boolean], formLabel: Option[Boolean], params: PriorParameters) = {
-    val model: LearningModel = new LearningModel(params)
-    val teamHelper = new TeamHelper
-    teamHelper.observeEvidence(model, fixtureLabel, formLabel)
-    println("model for form::: ", model)
-    println()
+  def learnOnLabels(fixtureLabel: Option[Boolean], formLabel: Option[Boolean]) = {
+    val model: Model = new LearningModel(PARAMS)
+    new TeamHelper().observeEvidence(model, fixtureLabel, formLabel)
+//    println("model for form::: ", model)
+//    println()
     model
   }
 
-  def learnModels(teamH2H: Seq[Fixture], teamForms: Seq[Form], target: String, params: PriorParameters) = {
+  def learnModels(teamH2H: Seq[Fixture], teamForms: Seq[Form], teamRatings: Seq[Rating], target: String) = {
 
     val teamId = teamForms.head.teamId
 
     println("Team Fixtures for team with id: " + teamId + " = " + teamH2H)
     println()
     println("Team Forms for team with id: " + teamId + " = " + teamForms)
+    println()
+    println("Team Ratings for team with id: " + teamId + " = " + teamRatings)
     println()
 
     val fixtureLabels = getFixtureLabels(teamH2H)
@@ -213,9 +230,34 @@ object LearningComponent {
       fixtureLabel <- fixtureLabels
       formLabel <- formLabels
     } yield {
-      learnOnLabels(fixtureLabel, formLabel, params)
+      learnOnLabels(fixtureLabel, formLabel)
     }
 
+  }
+
+  def stepTwo(team: Team, fixtures: Seq[Fixture], forms: Seq[Form], ratings: Seq[Rating], target: String) = {
+    val models = learnModels(fixtures, forms, ratings, target)
+    println(models)
+    val result = learnMAP()
+    TeamProbability(team.teamId, result.winProbability, result.goodRatingProbability, result.badRatingProbability,
+      result.goodFormProbability, result.badFormProbability, result.goodHead2HeadProbability, result.badHead2HeadProbability)
+  }
+
+  def stepOne(team: Team, fixtures: Seq[Fixture], forms: Seq[Form], ratings: Seq[Rating], target: String) = {
+    val teamProbabilities = stepTwo(team, fixtures, forms, ratings, target)
+    saveResult(teamProbabilities, target)
+    if (target.equals(BATCH)) cleanRT()
+    new LearningResponse(true, "Learning completed for team with id: " + team.teamId, teamProbabilities)
+  }
+
+  def getTeamStat(team: Team, target: String) = {
+    for {
+      teamH2H <- getTeamMatches(team.teamId, target)
+      teamForms <- getTeamForms(team.teamId, target)
+      teamRatings <- getTeamRatings(team.teamId, target)
+    } yield {
+      (teamH2H, teamForms, teamRatings)
+    }
   }
 
   /**
@@ -226,27 +268,15 @@ object LearningComponent {
     * @param target
     * @return
     */
-  def processLearn(team: Option[Team], id: String, target: String) = {
+  def processLearn(team: Option[Team], id: String, target: String): Future[LearningResponse] = {
     team match {
       case Some(t) => {
         println("Learning for team: " + t.teamName + "..." + " | Team ID: " + t.teamId)
         println()
-        val params = getPriorParams
         for {
-          teamForms <- getTeamForms(t.teamId, target)
-          teamH2H <- getTeamMatches(t.teamId, target)
+          (fixtures, forms, ratings) <- getTeamStat(t, target)
         } yield {
-          val models = learnModels(teamH2H, teamForms, target, params)
-          val result = learnMAP(params)
-          println(t.teamId, result.winProbability, result.goodRatingProbability, result.badRatingProbability,
-            result.goodFormProbability, result.badFormProbability, result.goodHead2HeadProbability, result.badHead2HeadProbability)
-          println()
-          val teamProbabilities =
-            TeamProbability(t.teamId, result.winProbability, result.goodRatingProbability, result.badRatingProbability,
-              result.goodFormProbability, result.badFormProbability, result.goodHead2HeadProbability, result.badHead2HeadProbability)
-          saveResult(teamProbabilities, target)
-          if (target.equals(BATCH)) cleanRT()
-          new LearningResponse(true, "Learning completed for team with id: " + t.teamId, teamProbabilities)
+          stepOne(t, fixtures, forms, ratings, target)
         }
       }
       case None => Future {
@@ -259,19 +289,19 @@ object LearningComponent {
   /**
     * Learning using figaro
     *
-    * @param parameters
     * @return
     */
-  def learnMAP(parameters: PriorParameters): PostParameters = {
-    val algorithm = EMWithBP(parameters.probabilities: _*)
+  def learnMAP() = {
+    val algorithm = EMWithBP(PARAMS.probabilities: _*)
+    //    val algorithm = EMWithVE(PARAMS.probabilities: _*)
     algorithm.start()
-    val winProbability = parameters.winProbability.MAPValue
-    val goodRatingProbability = parameters.goodRatingProbability.MAPValue
-    val badRatingProbability = parameters.badRatingProbability.MAPValue
-    val goodFormProbability = parameters.goodFormProbability.MAPValue
-    val badFormProbability = parameters.badFormProbability.MAPValue
-    val goodHead2HeadProbability = parameters.goodHead2HeadProbability.MAPValue
-    val badHead2HeadProbability = parameters.badHead2HeadProbability.MAPValue
+    val winProbability = PARAMS.winProbability.MAPValue
+    val goodRatingProbability = PARAMS.goodRatingProbability.MAPValue
+    val badRatingProbability = PARAMS.badRatingProbability.MAPValue
+    val goodFormProbability = PARAMS.goodFormProbability.MAPValue
+    val badFormProbability = PARAMS.badFormProbability.MAPValue
+    val goodHead2HeadProbability = PARAMS.goodHead2HeadProbability.MAPValue
+    val badHead2HeadProbability = PARAMS.badHead2HeadProbability.MAPValue
     algorithm.kill()
     new PostParameters(winProbability, goodRatingProbability, badRatingProbability, goodFormProbability, badFormProbability, goodHead2HeadProbability, badHead2HeadProbability)
   }
