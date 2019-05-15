@@ -21,8 +21,6 @@ abstract class FixtureFeederTable extends Table[FixtureFeederTable, FixtureFeede
 
   object awayTeamGoals extends IntColumn
 
-  object dateOfCompetition extends Col[time.LocalDateTime]
-
   object dateCreated extends Col[time.LocalDate] with PrimaryKey
 
   def saveEntity(entity: FixtureFeeder): Future[ResultSet] = {
@@ -31,7 +29,6 @@ abstract class FixtureFeederTable extends Table[FixtureFeederTable, FixtureFeede
       .value(_.awayTeamName, entity.awayTeamName)
       .value(_.homeTeamGoals, entity.homeTeamGoals)
       .value(_.awayTeamGoals, entity.awayTeamGoals)
-      .value(_.dateOfCompetition, entity.dateOfCompetition)
       .value(_.dateCreated, entity.dateCreated)
       .future()
   }

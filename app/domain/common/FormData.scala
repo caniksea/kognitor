@@ -6,5 +6,5 @@ trait FormData {
   def numberOfWins: Int
   def numberOfLoses: Int
   def numberOfDraws: Int
-  def sourceDate: LocalDate = LocalDate.now
+  def dateCreated: LocalDate = LocalDate.now
 }

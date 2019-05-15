@@ -1,17 +1,17 @@
 package domain.feeder
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 
 import domain.common.FixtureData
 import play.api.libs.json.Json
 
 case class FixtureFeeder(
-                        teamName: String,
+                          teamName: String,
                           awayTeamName: String,
                           homeTeamGoals: Int,
                           awayTeamGoals: Int,
-                          dateOfCompetition: LocalDateTime,
-                        ) extends FixtureData { }
+                          override val dateCreated: LocalDate
+                        ) extends FixtureData {}
 
 object FixtureFeeder {
   implicit val fixtureFeederFormat = Json.format[FixtureFeeder]

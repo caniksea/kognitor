@@ -21,7 +21,7 @@ abstract class FormFeederTable extends Table[FormFeederTable, FormFeeder] with R
 
   object numberOfDraws extends IntColumn
 
-  object sourceDate extends Col[LocalDate] with PrimaryKey
+  object dateCreated extends Col[LocalDate] with PrimaryKey
 
   def saveEntity(entity: FormFeeder): Future[ResultSet] = {
     insert
@@ -29,21 +29,21 @@ abstract class FormFeederTable extends Table[FormFeederTable, FormFeeder] with R
       .value(_.numberOfDraws, entity.numberOfDraws)
       .value(_.numberOfLoses, entity.numberOfLoses)
       .value(_.numberOfWins, entity.numberOfWins)
-      .value(_.sourceDate, entity.sourceDate)
+      .value(_.dateCreated, entity.dateCreated)
       .future()
   }
 
   def getTeamForm(teamName: String, date: LocalDate): Future[Option[FormFeeder]] = {
     select
       .where(_.teamName eqs teamName)
-      .and(_.sourceDate eqs date)
+      .and(_.dateCreated eqs date)
       .one()
   }
 
   def getTeamsForm(teamNames: List[String], date: LocalDate): Future[Seq[FormFeeder]] = {
     select
       .where(_.teamName in teamNames)
-      .and(_.sourceDate eqs date)
+      .and(_.dateCreated eqs date)
       .fetchEnumerator() run Iteratee.collect()
   }
 }

@@ -5,13 +5,13 @@ import akka.routing.{DefaultResizer, RoundRobinPool}
 import conf.connections.Configuration
 import services.feeder.DatasourceService
 
-import scala.concurrent.duration._
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 
 object FeederActor {
   def props: Props = Props[FeederActor]
+
+//  case object DataFetch
 }
 
 class FeederActor extends Actor with ActorLogging {
@@ -26,24 +26,17 @@ class FeederActor extends Actor with ActorLogging {
       Some(resizer)).props(persistDataActorProps))
 
 
+
   def getData = {
-    val teams = DatasourceService.apply.getTeams
 
     for {
-      teamList <- teams
-      teamsFixture <- DatasourceService.apply.getFixtureData(teamList)
-      teamsRating <- DatasourceService.apply.getRatingData(teamList)
-      teamsForm <- DatasourceService.apply.getFormData(teamList)
+      (fixtureData, formData, ratingData) <- DatasourceService.apply.getData
     } yield {
-      println(teamList, teamsFixture)
-      persistDataActorActorRef ! PersistDataActor.PersistFixtures(teamsFixture)
-      persistDataActorActorRef ! PersistDataActor.PersistRatings(teamsRating)
-      persistDataActorActorRef ! PersistDataActor.PersistForms(teamsForm)
-      persistDataActorActorRef ! PersistDataActor.RTLearn("rt")
+      persistDataActorActorRef ! PersistDataActor.PersistData(fixtureData, formData, ratingData)
     }
   }
 
-  override def receive: Receive = {
+  override def receive: PartialFunction[Any, Unit] = {
     case "START" => getData
     case _ => println(" This is Unknown Message ")
   }

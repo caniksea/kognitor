@@ -21,9 +21,7 @@ abstract class FormTable extends Table[FormTable, Form] with RootConnector {
 
   object numberOfDraws extends IntColumn
 
-  object sourceDate extends Col[LocalDate] with PrimaryKey
-
-  object dateCreated extends Col[LocalDateTime]
+  object dateCreated extends Col[LocalDate] with PrimaryKey
 
   def saveEntity(entity: Form): Future[ResultSet] = {
     insert
@@ -31,7 +29,6 @@ abstract class FormTable extends Table[FormTable, Form] with RootConnector {
       .value(_.numberOfWins, entity.numberOfWins)
       .value(_.numberOfLoses, entity.numberOfLoses)
       .value(_.numberOfDraws, entity.numberOfDraws)
-      .value(_.sourceDate, entity.sourceDate)
       .value(_.dateCreated, entity.dateCreated)
       .future()
   }

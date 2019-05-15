@@ -8,7 +8,7 @@ abstract class Model() {
   val hasGoodRating: Element[Boolean]
   val hasGoodForm: Element[Boolean]
   val hasHomeGroundAdvantage: Element[Boolean]
-  val hasGoodStanding: Element[Boolean]
+//  val hasGoodStanding: Element[Boolean]
 
   //  val isInForm: Element[Boolean]
   //  val hasHighRating: Element[Boolean]
@@ -19,23 +19,23 @@ class LearningModel(parameters: PriorParameters) extends Model {
 
   val isWinner = Flip(parameters.winProbability)
 
-  val highRating: Element[Boolean] = Flip(parameters.goodRatingProbability)
-  val lowRating = Flip(parameters.badRatingProbability)
-  val highForm = Flip(parameters.goodFormProbability)
-  val lowForm = Flip(parameters.badFormProbability)
+//  val goodStanding = highForm && highRating
+//  val badStanding = lowForm && lowRating
+
   val hasGoodHead2head = Flip(parameters.goodHead2HeadProbability)
   val hasBadHead2Head = Flip(parameters.badHead2HeadProbability)
-
-  val goodStanding = highForm && highRating
-  val badStanding = lowForm && lowRating
-
   override val hasHomeGroundAdvantage: Element[Boolean] = If(isWinner, hasGoodHead2head, hasBadHead2Head)
 
-  override val hasGoodStanding: Element[Boolean] = If(isWinner, goodStanding, badStanding)
+//  override val hasGoodStanding: Element[Boolean] = If(isWinner, goodStanding, badStanding)
 
-  override val hasGoodRating: Element[Boolean] = If(hasGoodStanding, highRating, lowRating)
+  val highRating: Element[Boolean] = Flip(parameters.goodRatingProbability)
+  val lowRating = Flip(parameters.badRatingProbability)
+  override val hasGoodRating: Element[Boolean] = If(isWinner, highRating, lowRating)
 
-  override val hasGoodForm: Element[Boolean] = If(hasGoodStanding, highForm, lowForm)
+
+  val highForm = Flip(parameters.goodFormProbability)
+  val lowForm = Flip(parameters.badFormProbability)
+  override val hasGoodForm: Element[Boolean] = If(isWinner, highForm, lowForm)
 
 }
 
@@ -50,16 +50,16 @@ class ReasoningModel(parameters: PostParameters) extends Model {
   val hasGoodHead2head = Flip(parameters.goodHead2HeadProbability)
   val hasBadHead2Head = Flip(parameters.badHead2HeadProbability)
 
-  val goodStanding = highForm && highRating
-  val badStanding = lowForm && lowRating
+//  val goodStanding = highForm && highRating
+//  val badStanding = lowForm && lowRating
 
   override val hasHomeGroundAdvantage: Element[Boolean] = If(isWinner, hasGoodHead2head, hasBadHead2Head)
 
-  override val hasGoodStanding: Element[Boolean] = If(isWinner, goodStanding, badStanding)
+//  override val hasGoodStanding: Element[Boolean] = If(isWinner, goodStanding, badStanding)
 
-  override val hasGoodRating: Element[Boolean] = If(hasGoodStanding, highRating, lowRating)
+  override val hasGoodRating: Element[Boolean] = If(isWinner, highRating, lowRating)
 
-  override val hasGoodForm: Element[Boolean] = If(hasGoodStanding, highForm, lowForm)
+  override val hasGoodForm: Element[Boolean] = If(isWinner, highForm, lowForm)
 
 
 //  override val hasHomeGroundAdvantage = Flip(parameters.head2headHomeWinsProbability)

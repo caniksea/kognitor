@@ -10,7 +10,7 @@ case class FormFeeder(
                        numberOfWins: Int,
                        numberOfLoses: Int,
                        numberOfDraws: Int,
-                       override val sourceDate: LocalDate
+                       override val dateCreated: LocalDate
                      ) extends FormData {}
 
 object FormFeeder {
