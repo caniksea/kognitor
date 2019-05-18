@@ -12,7 +12,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object DatasourceComponent {
 
-  val today = LocalDate.parse("2018-02-25")
+  val today = LocalDate.parse("2018-10-20")
 
   def getTeams: Future[Seq[Team]] = TeamService.masterImpl.getEntities
 
