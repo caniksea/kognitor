@@ -7,11 +7,11 @@ import services.learning.LearningService
 class LearnActor extends Actor with ActorLogging  {
 
   def processLearn(teams: Seq[String], target: String): Unit = {
-//    println(teams, target)
-    teams.foreach(teamId => {
-      println("learning on team with id: ", teamId)
-      LearningService.apply.learn(teamId, target)
-    })
+    LearningService.apply.learnForAll(target)
+//    teams.foreach(teamId => {
+//      println("learning on team with id: ", teamId)
+//      LearningService.apply.learn(teamId, target)
+//    })
   }
 
   override def receive: Receive = {
@@ -24,7 +24,7 @@ class LearnActor extends Actor with ActorLogging  {
 }
 
 object LearnActor {
-  def props = Props[LearnActor]
+  def props: Props = Props[LearnActor]
 
 //  case class Learn(teams: Seq[String], target: String)
 

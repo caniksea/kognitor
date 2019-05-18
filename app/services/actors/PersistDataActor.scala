@@ -22,7 +22,7 @@ object PersistDataActor {
 
 class PersistDataActor extends Actor with ActorLogging {
 
-  val learnActorProps = LearnActor.props
+  val learnActorProps: Props = LearnActor.props
 
   val resizer: DefaultResizer =
     DefaultResizer(lowerBound = Configuration.config.getInt("custom-akka-actors.actorNumbers.lowerBound"),
@@ -33,9 +33,6 @@ class PersistDataActor extends Actor with ActorLogging {
     Some(resizer)).props(learnActorProps))
 
   def processSave(fixtures: Seq[FixtureFeeder], forms: Seq[FormFeeder], ratings: Seq[RatingFeeder]): Unit = {
-//    DataInjectionService.apply.saveData(fixtures, forms, ratings)
-//    println(s"Should call sender: $sender ")
-//    sender ! FeederActor.DataFetch
     for {
       teams <- DataInjectionService.apply.saveData(fixtures, forms, ratings)
     } yield {
@@ -45,12 +42,7 @@ class PersistDataActor extends Actor with ActorLogging {
   }
 
   override def receive: PartialFunction[Any, Unit] = {
-    case post: PersistMessage => {
-      if (post.message.title.length != 0) {
-        // Save Service Here
-      }
 
-    }
     case persistData: PersistData => processSave(persistData.fixtures, persistData.forms, persistData.ratings)
 
     case _ => println(s"${self.path} says Unknown message type!")
