@@ -34,6 +34,8 @@ class FixtureRepositoryImpl extends FixtureRepository{
     FixtureDatabase.FixtureTable.deleteEntity(entity).map(result => result.isExhausted())
 
   override def clear: Future[Boolean] = ???
+
+  override def deleteByTeamId(teamId: String): Future[Boolean] = ???
 }
 
 class FixtureDatabase(override val connector: KeySpaceDef) extends Database[FixtureDatabase](connector) {

@@ -1,6 +1,6 @@
 package component.learning
 
-import com.cra.figaro.algorithm.learning.EMWithBP
+import com.cra.figaro.algorithm.learning.{EMWithBP, GeneralizedEM}
 import component.soccer.TeamHelper
 import component.{LearningModel, Model, PostParameters, PriorParameters}
 import domain.learning.LearningResponse
@@ -99,15 +99,15 @@ class LearningEngine {
     }
   }
 
-  def learnOnLabels(fixtureLabel: Option[Boolean], formLabel: Option[Boolean], ratingLabel: Option[Boolean]): Model = {
-    val model: Model = new LearningModel(LearningEngine.PARAMS)
+  def learnOnLabels(fixtureLabel: Option[Boolean], formLabel: Option[Boolean], ratingLabel: Option[Boolean], priorParams: PriorParameters): Model = {
+    val model: Model = new LearningModel(priorParams)
     new TeamHelper().observeEvidence(model, fixtureLabel, formLabel, ratingLabel)
     //    println("model for form::: ", model)
     //    println()
     model
   }
 
-  def learnModels(teamH2H: Seq[Fixture], teamForms: Seq[Form], teamRatings: Seq[Rating], target: String): Seq[Model] = {
+  def learnModels(teamH2H: Seq[Fixture], teamForms: Seq[Form], teamRatings: Seq[Rating], target: String, priorParams: PriorParameters): Seq[Model] = {
 
     val teamId = teamForms.head.teamId
 
@@ -127,32 +127,9 @@ class LearningEngine {
       formLabel <- formLabels
       ratingLabel <- ratingLabels
     } yield {
-      learnOnLabels(fixtureLabel, formLabel, ratingLabel)
+      learnOnLabels(fixtureLabel, formLabel, ratingLabel, priorParams)
     }
 
-  }
-  def learnMAP(): PostParameters = {
-    val algorithm = LearningEngine.ALGORITHM
-    //    val algorithm = EMWithVE(PARAMS.probabilities: _*)
-    LearningEngine.startAlgorithm()
-
-    val winProbability = LearningEngine.PARAMS.winProbability.MAPValue
-    val goodRatingProbability = LearningEngine.PARAMS.goodRatingProbability.MAPValue
-    val badRatingProbability = LearningEngine.PARAMS.badRatingProbability.MAPValue
-    val goodFormProbability = LearningEngine.PARAMS.goodFormProbability.MAPValue
-    val badFormProbability = LearningEngine.PARAMS.badFormProbability.MAPValue
-    val goodHead2HeadProbability = LearningEngine.PARAMS.goodHead2HeadProbability.MAPValue
-    val badHead2HeadProbability = LearningEngine.PARAMS.badHead2HeadProbability.MAPValue
-//    algorithm.kill()
-    new PostParameters(winProbability, goodRatingProbability, badRatingProbability, goodFormProbability, badFormProbability, goodHead2HeadProbability, badHead2HeadProbability)
-  }
-
-  def stepTwo(team: Team, fixtures: Seq[Fixture], forms: Seq[Form], ratings: Seq[Rating], target: String) = {
-    val models = learnModels(fixtures, forms, ratings, target)
-    println(models)
-    val result = learnMAP()
-    TeamProbability(team.teamId, result.winProbability, result.goodRatingProbability, result.badRatingProbability,
-      result.goodFormProbability, result.badFormProbability, result.goodHead2HeadProbability, result.badHead2HeadProbability)
   }
 
   def saveGlobal(teamProbabilities: TeamProbability): Future[Boolean] =
@@ -173,10 +150,10 @@ class LearningEngine {
         rtSave <- TeamProbabilityService.realtimeViewImpl.saveEntity(teamProbabilities)
       } yield rtSave
 
-  def cleanRT(): Future[Boolean] = for {
-    clearRating <- RatingService.pseudomasterImpl.clear
-    clearFixture <- FixtureService.pseudomasterImpl.clear
-    clearForm <- FormService.pseudomasterImpl.clear
+  def cleanRT(team: Team): Future[Boolean] = for {
+    clearRating <- RatingService.pseudomasterImpl.deleteByTeamId(team.teamId)
+    clearFixture <- FixtureService.pseudomasterImpl.deleteByTeamId(team.teamId)
+    clearForm <- FormService.pseudomasterImpl.deleteByTeamId(team.teamId)
   } yield {
     if (clearFixture) println("RT Fixtures cleared!")
     if (clearForm) println("RT Forms cleared!")
@@ -184,10 +161,46 @@ class LearningEngine {
     clearFixture && clearForm && clearRating
   }
 
-  def stepOne(team: Team, fixtures: Seq[Fixture], forms: Seq[Form], ratings: Seq[Rating], target: String) = {
+  def learnMAP(priorParams: PriorParameters, algo: GeneralizedEM): (PostParameters) = {
+//        val algorithm = LearningEngine.ALGORITHM
+    //    val algorithm = EMWithVE(PARAMS.probabilities: _*)
+//    LearningEngine.startAlgorithm()
+//    println("In learnMAP, is algo active? ", ALGORITHM.isActive)
+    println(s"Is algo ${algo} for param ${priorParams} active? ${algo.isActive}")
+    if (!algo.isActive) algo.start()
+    println(s"How about now? ${algo.isActive}")
+
+    val winProbability = priorParams.winProbability.MAPValue
+    val goodRatingProbability = priorParams.goodRatingProbability.MAPValue
+    val badRatingProbability = priorParams.badRatingProbability.MAPValue
+    val goodFormProbability = priorParams.goodFormProbability.MAPValue
+    val badFormProbability = priorParams.badFormProbability.MAPValue
+    val goodHead2HeadProbability = priorParams.goodHead2HeadProbability.MAPValue
+    val badHead2HeadProbability = priorParams.badHead2HeadProbability.MAPValue
+//    algo.kill()
+    println(s"Killing algo for param: ${priorParams}...")
+    algo.kill();
+    println("Algo killed...returning response...")
+    (new PostParameters(winProbability, goodRatingProbability, badRatingProbability, goodFormProbability, badFormProbability, goodHead2HeadProbability, badHead2HeadProbability))
+  }
+
+  def stepTwo(team: Team, fixtures: Seq[Fixture], forms: Seq[Form], ratings: Seq[Rating], target: String): TeamProbability = {
+    val priorParams = new PriorParameters
+    val models = learnModels(fixtures, forms, ratings, target, priorParams)
+    println(models)
+    println()
+    val algo = EMWithBP(priorParams.probabilities: _*)
+    println(s"${team.teamName} has this prior params: ${priorParams} and this algo: ${algo}")
+    val (result) = learnMAP(priorParams, algo)
+    println(s"Is algo ${algo} active?: ", algo.isActive)
+    TeamProbability(team.teamId, result.winProbability, result.goodRatingProbability, result.badRatingProbability,
+      result.goodFormProbability, result.badFormProbability, result.goodHead2HeadProbability, result.badHead2HeadProbability)
+  }
+
+  def stepOne(team: Team, fixtures: Seq[Fixture], forms: Seq[Form], ratings: Seq[Rating], target: String): LearningResponse = {
     val teamProbabilities = stepTwo(team, fixtures, forms, ratings, target)
     saveResult(teamProbabilities, target)
-    if (target.equals(LearningEngine.BATCH)) cleanRT()
+    if (target.equals(LearningEngine.BATCH)) cleanRT(team)
     new LearningResponse(true, "Learning completed for team with id: " + team.teamId, teamProbabilities)
   }
 
@@ -215,7 +228,7 @@ class LearningEngine {
 
   def processLearn(team: Option[Team], id: String, target: String): Future[LearningResponse] = {
     team match {
-      case Some(t) => {
+      case Some(t) =>
         println("Learning for team: " + t.teamName + "..." + " | Team ID: " + t.teamId)
         println()
         for {
@@ -223,7 +236,6 @@ class LearningEngine {
         } yield {
           stepOne(t, fixtures, forms, ratings, target)
         }
-      }
       case None => Future {
         new LearningResponse(false, "Can't find team with id: " + id)
       }
@@ -237,14 +249,15 @@ object LearningEngine {
   val BATCH = "bt"
   val REALTIME = "rt"
 
-  val PARAMS = new PriorParameters
-
-  val ALGORITHM = EMWithBP(PARAMS.probabilities: _*)
-
-  def startAlgorithm(): Unit = {
-    if (!ALGORITHM.isActive) ALGORITHM.start()
-  }
-  def stopAlgorithm() = {
-    if (ALGORITHM.isActive) ALGORITHM.kill()
-  }
+//  val PARAMS = new PriorParameters
+//
+//  val ALGORITHM = EMWithBP(PARAMS.probabilities: _*)
+//
+//  def startAlgorithm(): Unit = {
+//    if (!ALGORITHM.isActive) ALGORITHM.start()
+//  }
+//
+//  def stopAlgorithm(): Unit = {
+//    if (ALGORITHM.isActive) ALGORITHM.kill()
+//  }
 }

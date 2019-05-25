@@ -40,9 +40,11 @@ object LearningComponent {
     * @return
     */
   def learn(teamId: String, target: String): Future[LearningResponse] = {
+    val learningEngine: LearningEngine = new LearningEngine
+    println(s"${teamId} has this engine: ${learningEngine}")
     for {
       team <- TeamService.masterImpl.getEntity(teamId)
-      response <- new LearningEngine().processLearn(team, teamId, target)
+      response <- learningEngine.processLearn(team, teamId, target)
     } yield {
       response
     }
@@ -61,7 +63,7 @@ object LearningComponent {
       teams <- TeamService.masterImpl.getEntities
       learnings <- processLearnForTeams(teams, target)
     } yield {
-      LearningEngine.stopAlgorithm()
+//      LearningEngine.stopAlgorithm()
       learnings
     }
   }

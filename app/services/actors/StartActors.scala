@@ -13,7 +13,7 @@ class StartActors @Inject()(system: ActorSystem)(implicit executionContext: Exec
 
   system.scheduler.schedule(
     initialDelay = 0.microseconds,
-    interval = 3.minutes,
+    interval = 2.minutes,
     receiver = feederActor,
     message = "START"
   )

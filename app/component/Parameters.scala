@@ -8,7 +8,7 @@ class PriorParameters {
 //  val lastWinValue: Int = Model.numberOfLastWins + 1
 //  val lastLoseValue: Int = (Model.numberOfLastGames - Model.numberOfLastWins) - 1
 
-  val winProbability = Beta(h2hWinValue, h2hLossValue)
+  val winProbability = Beta(4, 4)
   //  val head2headHomeWinsProbability = Beta(h2hWinValue, h2hLossValue)
   //  val formProbability = Beta(lastWinValue, lastLoseValue)
   //  val highRatingProbability = Uniform(0.6, 1)

@@ -12,6 +12,8 @@ trait FixtureRepository extends CRUDRepository[Fixture] {
 
   def clear: Future[Boolean]
 
+  def deleteByTeamId(teamId: String): Future[Boolean]
+
 }
 
 object FixtureRepository {

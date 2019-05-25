@@ -11,20 +11,19 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object Reason {
 
-  def doReason(prob: TeamProbability) = {
-    println("prob:: ", prob)
+  def doReason(prob: TeamProbability): Option[Double] = {
+    println(s"Team probabilities for teamId: ${prob.teamId} = ${prob}")
     try {
       val learnedParams: PostParameters =
         new PostParameters(prob.winProbability, prob.goodRatingProbability, prob.badRatingProbability,
           prob.goodFormProbability, prob.badFormProbability, prob.goodHead2HeadProbability, prob.badHead2HeadProbability)
-      println("learnedParams:: ", learnedParams)
+      println(s"Learned params for teamId: ${prob.teamId} = ${learnedParams}")
       val model: Model = new ReasoningModel(learnedParams)
-      println("Did you get here...")
-      println("model:: ", model, model.hasGoodForm)
+      println(s"Reasoning model for teamid: ${prob.teamId} = ${model}")
       val algorithm = VariableElimination(model.isWinner)
       algorithm.start()
       val isWinProbability = algorithm.probability(model.isWinner, true)
-      println("Win probability: " + isWinProbability)
+      println(s"Win probability for teamId: ${prob.teamId} = ${isWinProbability}")
       algorithm.kill()
       Some(isWinProbability)
     } catch {
@@ -36,14 +35,14 @@ object Reason {
     }
   }
 
-  def processProbabilities(probabilities: Option[TeamProbability]) = {
+  def processProbabilities(probabilities: Option[TeamProbability]): Option[Double] = {
     probabilities match {
       case Some(value) => doReason(value)
       case None => None
     }
   }
 
-  def runReasoning(request: Previse, service: TeamProbabilityService) = {
+  def runReasoning(request: Previse, service: TeamProbabilityService): Future[Option[Double]] = {
     for {
       probabilities <- service.getEntity(request.homeTeamId)
     } yield {
@@ -80,10 +79,13 @@ object Reason {
 
   def processRequest(request: Previse): Future[PreviseResult] = {
     val reasoningType = request.reasoningOption
-    println(reasoningType)
     val service: TeamProbabilityService = reasoningType.toLowerCase match {
-      case "bc" => TeamProbabilityService.batchViewImpl
-      case "rt" => TeamProbabilityService.realtimeViewImpl
+      case "bc" =>
+        println("Reasoning type: Batch.")
+        TeamProbabilityService.batchViewImpl
+      case "rt" =>
+        println("Reasoning type: Real time.")
+        TeamProbabilityService.realtimeViewImpl
       case _ => null
     }
 

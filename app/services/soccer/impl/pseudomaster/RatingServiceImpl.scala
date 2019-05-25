@@ -24,4 +24,7 @@ class RatingServiceImpl extends RatingService {
     RatingRepository.pseudomasterImpl.deleteEntity(entity)
 
   override def clear: Future[Boolean] = RatingRepository.pseudomasterImpl.clear
+
+  override def deleteByTeamId(teamId: String): Future[Boolean] =
+    RatingRepository.pseudomasterImpl.deleteByTeamId(teamId)
 }
