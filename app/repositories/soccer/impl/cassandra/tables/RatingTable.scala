@@ -44,4 +44,10 @@ abstract class RatingTable extends Table[RatingTable, Rating] with RootConnector
     truncate.future()
   }
 
+  def deleteByTeamId(teamId: String): Future[ResultSet] = {
+    delete
+      .where(_.teamId eqs teamId)
+      .future()
+  }
+
 }

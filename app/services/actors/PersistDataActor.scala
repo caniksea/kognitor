@@ -6,6 +6,7 @@ import conf.connections.Configuration
 import domain.datainjection.Post
 import domain.feeder.{FixtureFeeder, FormFeeder, RatingFeeder}
 import services.actors.PersistDataActor.{PersistData, PersistMessage}
+import services.actors.common.LearnActor
 import services.feeder.DataInjectionService
 
 import scala.concurrent.Future
@@ -36,8 +37,7 @@ class PersistDataActor extends Actor with ActorLogging {
     for {
       teams <- DataInjectionService.apply.saveData(fixtures, forms, ratings)
     } yield {
-      println(s"Should call learn actor with: ", teams)
-      learnActorRef ! LearnActor.Learn(teams)
+      learnActorRef ! LearnActor.Learn(teams, "rt")
     }
   }
 

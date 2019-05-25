@@ -9,6 +9,7 @@ import scala.concurrent.Future
 trait FormService extends CRUDService[Form] {
   def getTeamForms(teamId: String): Future[Seq[Form]]
   def clear: Future[Boolean]
+  def deleteByTeamId(teamId: String): Future[Boolean]
 }
 
 object FormService {

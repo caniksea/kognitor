@@ -10,9 +10,10 @@ trait RatingRepository extends CRUDRepository[Rating] {
 
   def getTeamRatings(teamId: String): Future[Seq[Rating]]
   def clear: Future[Boolean]
+  def deleteByTeamId(teamId: String): Future[Boolean]
 }
 
 object RatingRepository {
-  def masterImpl: RatingRepository = new master.RatingRepositoryImpl();
-  def pseudomasterImpl: RatingRepository = new pseudomaster.RatingRepositoryImpl();
+  def masterImpl: RatingRepository = new master.RatingRepositoryImpl()
+  def pseudomasterImpl: RatingRepository = new pseudomaster.RatingRepositoryImpl()
 }

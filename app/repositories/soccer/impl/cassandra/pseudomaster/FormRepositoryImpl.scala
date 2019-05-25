@@ -33,6 +33,9 @@ class FormRepositoryImpl extends FormRepository {
     FormDatabase.FormTable.deleteEntity(entity).map(result => result.isExhausted())
 
   override def clear: Future[Boolean] = FormDatabase.FormTable.clear.map(result => result.isExhausted())
+
+  override def deleteByTeamId(teamId: String): Future[Boolean] =
+    FormDatabase.FormTable.deleteByTeamId(teamId).map(result => result.isExhausted())
 }
 
 class FormDatabase(override val connector: KeySpaceDef) extends Database[FormDatabase](connector) {

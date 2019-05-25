@@ -57,4 +57,10 @@ abstract class FixtureTable extends Table[FixtureTable, Fixture] with RootConnec
     truncate.future()
   }
 
+  def deleteByTeamId(teamId: String): Future[ResultSet] = {
+    delete
+      .where(_.homeTeamId eqs teamId)
+      .future()
+  }
+
 }

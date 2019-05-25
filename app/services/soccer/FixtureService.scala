@@ -10,6 +10,7 @@ trait FixtureService extends CRUDService[Fixture] {
 
   def getHomeTeamMatches(homeTeamId: String): Future[Seq[Fixture]]
   def clear: Future[Boolean]
+  def deleteByTeamId(teamId: String): Future[Boolean]
 }
 
 object FixtureService {

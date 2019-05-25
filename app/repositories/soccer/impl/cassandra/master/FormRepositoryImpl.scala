@@ -33,6 +33,8 @@ class FormRepositoryImpl extends FormRepository {
   }
 
   override def clear: Future[Boolean] = ???
+
+  override def deleteByTeamId(teamId: String): Future[Boolean] = ???
 }
 
 class FormDatabase(override val connector: KeySpaceDef) extends Database[FormDatabase](connector) {

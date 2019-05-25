@@ -34,6 +34,8 @@ class RatingRepositoryImpl extends RatingRepository {
     RatingDatabase.RatingTable.deleteEntity(entity).map(result => result.isExhausted())
 
   override def clear: Future[Boolean] = ???
+
+  override def deleteByTeamId(teamId: String): Future[Boolean] = ???
 }
 
 class RatingDatabase(override val connector: KeySpaceDef) extends Database[RatingDatabase](connector) {

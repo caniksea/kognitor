@@ -24,4 +24,7 @@ class FixtureServiceImpl extends FixtureService {
     FixtureRepository.pseudomasterImpl.deleteEntity(entity)
 
   override def clear: Future[Boolean] = FixtureRepository.pseudomasterImpl.clear
+
+  override def deleteByTeamId(teamId: String): Future[Boolean] =
+    FixtureRepository.pseudomasterImpl.deleteByTeamId(teamId)
 }
