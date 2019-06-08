@@ -1,11 +1,13 @@
 package component.learning
 
+import java.time.LocalDate
+
 import com.cra.figaro.algorithm.learning.{EMWithBP, GeneralizedEM}
 import component.soccer.TeamHelper
 import component.{LearningModel, Model, PostParameters, PriorParameters}
 import domain.learning.LearningResponse
 import domain.soccer.{Fixture, Form, Rating, Team, TeamProbability}
-import services.soccer.{FixtureService, FormService, RatingService, TeamProbabilityService, TeamService}
+import services.soccer.{FixtureService, FormService, RatingService, TeamProbabilityService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -132,7 +134,7 @@ class LearningEngine {
 
   }
 
-  def saveGlobal(teamProbabilities: TeamProbability): Future[Boolean] =
+  def saveResultForGlobal(teamProbabilities: TeamProbability): Future[Boolean] =
     for {
       batchSave <- TeamProbabilityService.batchViewImpl.saveEntity(teamProbabilities)
       rtSave <- TeamProbabilityService.realtimeViewImpl.saveEntity(teamProbabilities)
@@ -142,13 +144,10 @@ class LearningEngine {
       batchSave && rtSave
     }
 
-  def saveResult(teamProbabilities: TeamProbability, target: String): Future[Boolean] =
-    if (target.equals(LearningEngine.BATCH))
-      saveGlobal(teamProbabilities)
-    else
-      for {
-        rtSave <- TeamProbabilityService.realtimeViewImpl.saveEntity(teamProbabilities)
-      } yield rtSave
+  def saveResultForRT(teamProbabilities: TeamProbability): Future[Boolean] =
+    for {
+      rtSave <- TeamProbabilityService.realtimeViewImpl.saveEntity(teamProbabilities)
+    } yield rtSave
 
   def cleanRT(team: Team): Future[Boolean] = for {
     clearRating <- RatingService.pseudomasterImpl.deleteByTeamId(team.teamId)
@@ -161,12 +160,12 @@ class LearningEngine {
     clearFixture && clearForm && clearRating
   }
 
-  def learnMAP(priorParams: PriorParameters, algo: GeneralizedEM): (PostParameters) = {
-//        val algorithm = LearningEngine.ALGORITHM
+  def learnMAP(priorParams: PriorParameters, algo: GeneralizedEM): PostParameters = {
+    //        val algorithm = LearningEngine.ALGORITHM
     //    val algorithm = EMWithVE(PARAMS.probabilities: _*)
-//    LearningEngine.startAlgorithm()
-//    println("In learnMAP, is algo active? ", ALGORITHM.isActive)
-    println(s"Is algo ${algo} for param ${priorParams} active? ${algo.isActive}")
+    //    LearningEngine.startAlgorithm()
+    //    println("In learnMAP, is algo active? ", ALGORITHM.isActive)
+    println(s"Is algo $algo for param $priorParams active? ${algo.isActive}")
     if (!algo.isActive) algo.start()
     println(s"How about now? ${algo.isActive}")
 
@@ -177,44 +176,54 @@ class LearningEngine {
     val badFormProbability = priorParams.badFormProbability.MAPValue
     val goodHead2HeadProbability = priorParams.goodHead2HeadProbability.MAPValue
     val badHead2HeadProbability = priorParams.badHead2HeadProbability.MAPValue
-//    algo.kill()
-    println(s"Killing algo for param: ${priorParams}...")
-    algo.kill();
+    //    algo.kill()
+    println(s"Killing algo for param: $priorParams...")
+    algo.kill()
     println("Algo killed...returning response...")
-    (new PostParameters(winProbability, goodRatingProbability, badRatingProbability, goodFormProbability, badFormProbability, goodHead2HeadProbability, badHead2HeadProbability))
+    new PostParameters(winProbability, goodRatingProbability, badRatingProbability, goodFormProbability, badFormProbability, goodHead2HeadProbability, badHead2HeadProbability)
   }
 
-  def stepTwo(team: Team, fixtures: Seq[Fixture], forms: Seq[Form], ratings: Seq[Rating], target: String): TeamProbability = {
-    val priorParams = new PriorParameters
-    val models = learnModels(fixtures, forms, ratings, target, priorParams)
-    println(models)
-    println()
-    val algo = EMWithBP(priorParams.probabilities: _*)
-    println(s"${team.teamName} has this prior params: ${priorParams} and this algo: ${algo}")
-    val (result) = learnMAP(priorParams, algo)
-    println(s"Is algo ${algo} active?: ", algo.isActive)
-    TeamProbability(team.teamId, result.winProbability, result.goodRatingProbability, result.badRatingProbability,
-      result.goodFormProbability, result.badFormProbability, result.goodHead2HeadProbability, result.badHead2HeadProbability)
-  }
-
-  def stepOne(team: Team, fixtures: Seq[Fixture], forms: Seq[Form], ratings: Seq[Rating], target: String): LearningResponse = {
-    val teamProbabilities = stepTwo(team, fixtures, forms, ratings, target)
-    saveResult(teamProbabilities, target)
-    if (target.equals(LearningEngine.BATCH)) cleanRT(team)
+  def processForBatch(team: Team, teamProbabilities: TeamProbability): LearningResponse = {
+    saveResultForGlobal(teamProbabilities)
+    cleanRT(team)
     new LearningResponse(true, "Learning completed for team with id: " + team.teamId, teamProbabilities)
+  }
+
+  def calculateRTProbabilities(team: Team, newTeamProbabilities: TeamProbability, teamProbabilities: Option[TeamProbability]): TeamProbability = teamProbabilities match {
+    case Some(tp) =>
+      val winProbability = (tp.winProbability + newTeamProbabilities.winProbability) / 2
+      val goodRatingProbability = (tp.goodRatingProbability + newTeamProbabilities.goodRatingProbability) / 2
+      val badRatingProbability = (tp.badRatingProbability + newTeamProbabilities.badRatingProbability) / 2
+      val goodFormProbability = (tp.goodFormProbability + newTeamProbabilities.goodFormProbability) / 2
+      val badFormProbability = (tp.badFormProbability + newTeamProbabilities.badFormProbability) / 2
+      val goodHead2HeadProbability = (tp.goodHead2HeadProbability + newTeamProbabilities.goodHead2HeadProbability) / 2
+      val badHead2HeadProbability = (tp.badHead2HeadProbability + newTeamProbabilities.badHead2HeadProbability) / 2
+      TeamProbability(team.teamId, winProbability, goodRatingProbability, badRatingProbability, goodFormProbability, badFormProbability, goodHead2HeadProbability, badHead2HeadProbability)
+    case None => newTeamProbabilities
+  }
+
+  def processForRT(team: Team, newTeamProbabilities: TeamProbability, teamProbabilities: Option[TeamProbability]): LearningResponse = {
+    val ntp = calculateRTProbabilities(team, newTeamProbabilities, teamProbabilities)
+    saveResultForRT(ntp)
+    new LearningResponse(true, "Learning completed for team with id: " + team.teamId, ntp)
+  }
+
+  def stepThree(team: Team, newTeamProbabilities: TeamProbability, target: String, teamProbabilities: Option[TeamProbability]): LearningResponse = {
+    if (target.equals(LearningEngine.BATCH)) processForBatch(team, newTeamProbabilities)
+    else processForRT(team, newTeamProbabilities, teamProbabilities)
   }
 
   def getTeamMatches(teamId: String, target: String): Future[Seq[Fixture]] =
     if (target.equals(LearningEngine.BATCH)) FixtureService.masterImpl.getHomeTeamMatches(teamId)
-    else FixtureService.pseudomasterImpl.getHomeTeamMatches(teamId)
+    else FixtureService.pseudomasterImpl.getTeamMatchForDate(teamId, LearningEngine.TODAY)
 
   def getTeamForms(teamId: String, target: String): Future[Seq[Form]] =
     if (target.equals(LearningEngine.BATCH)) FormService.masterImpl.getTeamForms(teamId)
-    else FormService.pseudomasterImpl.getTeamForms(teamId)
+    else FormService.pseudomasterImpl.getTeamFormForDate(teamId, LearningEngine.TODAY)
 
   def getTeamRatings(teamId: String, target: String): Future[Seq[Rating]] =
     if (target.equals(LearningEngine.BATCH)) RatingService.masterImpl.getTeamRatings(teamId)
-    else RatingService.pseudomasterImpl.getTeamRatings(teamId)
+    else RatingService.pseudomasterImpl.getTeamRatingForDate(teamId, LearningEngine.TODAY)
 
   def getTeamStat(team: Team, target: String): Future[(Seq[Fixture], Seq[Form], Seq[Rating])] = {
     for {
@@ -226,6 +235,29 @@ class LearningEngine {
     }
   }
 
+  def getTeamProbability(t: Team): Future[Option[TeamProbability]] = for {
+    probabilities <- TeamProbabilityService.realtimeViewImpl.getEntity(t.teamId)
+  } yield probabilities
+
+  def stepTwo(team: Team, fixtures: Seq[Fixture], forms: Seq[Form], ratings: Seq[Rating], target: String): TeamProbability = {
+    val priorParams = new PriorParameters
+    val models = learnModels(fixtures, forms, ratings, target, priorParams)
+    println(models)
+    println()
+    val algo = EMWithBP(priorParams.probabilities: _*)
+    println(s"${team.teamName} has this prior params: $priorParams and this algo: $algo")
+    val result = learnMAP(priorParams, algo)
+    println(s"Is algo $algo active?: ", algo.isActive)
+    TeamProbability(team.teamId, result.winProbability, result.goodRatingProbability, result.badRatingProbability,
+      result.goodFormProbability, result.badFormProbability, result.goodHead2HeadProbability, result.badHead2HeadProbability)
+  }
+
+  def stepOne(team: Team, fixtures: Seq[Fixture], forms: Seq[Form],
+              ratings: Seq[Rating], target: String, teamProbabilities: Option[TeamProbability]): LearningResponse = {
+    val newTeamProbabilities = stepTwo(team, fixtures, forms, ratings, target)
+    stepThree(team, newTeamProbabilities, target, teamProbabilities)
+  }
+
   def processLearn(team: Option[Team], id: String, target: String): Future[LearningResponse] = {
     team match {
       case Some(t) =>
@@ -233,8 +265,9 @@ class LearningEngine {
         println()
         for {
           (fixtures, forms, ratings) <- getTeamStat(t, target)
+          teamProbabilities <- getTeamProbability(t)
         } yield {
-          stepOne(t, fixtures, forms, ratings, target)
+          stepOne(t, fixtures, forms, ratings, target, teamProbabilities)
         }
       case None => Future {
         new LearningResponse(false, "Can't find team with id: " + id)
@@ -248,16 +281,5 @@ object LearningEngine {
 
   val BATCH = "bt"
   val REALTIME = "rt"
-
-//  val PARAMS = new PriorParameters
-//
-//  val ALGORITHM = EMWithBP(PARAMS.probabilities: _*)
-//
-//  def startAlgorithm(): Unit = {
-//    if (!ALGORITHM.isActive) ALGORITHM.start()
-//  }
-//
-//  def stopAlgorithm(): Unit = {
-//    if (ALGORITHM.isActive) ALGORITHM.kill()
-//  }
+  val TODAY: LocalDate = LocalDate.parse("2019-04-28")
 }

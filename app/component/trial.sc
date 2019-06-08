@@ -13,6 +13,10 @@
 
 val l = List(1, 2, 4)
 
+val e = 0.333
+val f = 0.456
+val g = (e + f) / 2
+
 
 
 

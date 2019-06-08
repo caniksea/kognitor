@@ -50,4 +50,11 @@ abstract class RatingTable extends Table[RatingTable, Rating] with RootConnector
       .future()
   }
 
+  def getTeamRatingForDate(teamId: String, date: LocalDate): Future[Seq[Rating]] = {
+    select
+      .where(_.teamId eqs teamId)
+      .and(_.dateCreated eqs date)
+      .fetchEnumerator() run Iteratee.collect()
+  }
+
 }

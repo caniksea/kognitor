@@ -1,5 +1,7 @@
 package repositories.soccer.impl.cassandra.master
 
+import java.time
+
 import com.outworkers.phantom.connectors.KeySpace
 import com.outworkers.phantom.database.Database
 import com.outworkers.phantom.dsl._
@@ -36,6 +38,8 @@ class FixtureRepositoryImpl extends FixtureRepository{
   override def clear: Future[Boolean] = ???
 
   override def deleteByTeamId(teamId: String): Future[Boolean] = ???
+
+  override def getTeamMatchForDate(teamId: String, date: time.LocalDate): Future[Seq[Fixture]] = ???
 }
 
 class FixtureDatabase(override val connector: KeySpaceDef) extends Database[FixtureDatabase](connector) {

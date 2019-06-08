@@ -17,11 +17,11 @@ class LearnActor extends Actor with ActorLogging  {
     context.actorOf(RoundRobinPool(Configuration.config.getInt("custom-akka-actors.actorNumbers.start"),
       Some(resizer)).props(teamOneLearnActorProps))
 
+
   def processLearn(teams: Seq[String], target: String): Unit = {
     val team1 = teams.head
     val restOfTeam = teams.tail
     val team2 = restOfTeam.head
-
     teamOneLearnActorRef ! TeamOneLearnActor.LearnOnTeam(team1, team2, target)
   }
 

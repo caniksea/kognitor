@@ -1,5 +1,7 @@
 package repositories.soccer.impl.cassandra.pseudomaster
 
+import java.time
+
 import com.outworkers.phantom.connectors.KeySpace
 import com.outworkers.phantom.database.Database
 import com.outworkers.phantom.dsl._
@@ -37,6 +39,9 @@ class RatingRepositoryImpl extends RatingRepository {
 
   override def deleteByTeamId(teamId: String): Future[Boolean] =
     RatingDatabase.RatingTable.deleteByTeamId(teamId).map(result => result.isExhausted())
+
+  override def getTeamRatingForDate(teamId: String, date: time.LocalDate): Future[Seq[Rating]] =
+    RatingDatabase.RatingTable.getTeamRatingForDate(teamId, date)
 }
 
 class RatingDatabase(override val connector: KeySpaceDef) extends Database[RatingDatabase](connector) {
