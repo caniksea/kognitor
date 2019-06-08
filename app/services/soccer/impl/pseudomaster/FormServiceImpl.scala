@@ -1,5 +1,7 @@
 package services.soccer.impl.pseudomaster
 
+import java.time.LocalDate
+
 import domain.soccer.Form
 import repositories.soccer.FormRepository
 import services.soccer.FormService
@@ -29,4 +31,7 @@ class FormServiceImpl extends FormService {
 
   override def deleteByTeamId(teamId: String): Future[Boolean] =
     FormRepository.pseudomasterImpl.deleteByTeamId(teamId)
+
+  override def getTeamFormForDate(teamId: String, date: LocalDate): Future[Seq[Form]] =
+    FormRepository.pseudomasterImpl.getTeamFormForDate(teamId, date)
 }

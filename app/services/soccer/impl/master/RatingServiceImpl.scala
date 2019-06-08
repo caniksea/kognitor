@@ -1,5 +1,7 @@
 package services.soccer.impl.master
 
+import java.time.LocalDate
+
 import domain.soccer.Rating
 import repositories.soccer.RatingRepository
 import services.soccer.RatingService
@@ -25,4 +27,6 @@ class RatingServiceImpl extends RatingService {
   override def clear: Future[Boolean] = ???
 
   override def deleteByTeamId(teamId: String): Future[Boolean] = ???
+
+  override def getTeamRatingForDate(teamId: String, date: LocalDate): Future[Seq[Rating]] = ???
 }

@@ -1,5 +1,7 @@
 package repositories.soccer.impl.cassandra.master
 
+import java.time
+
 import com.outworkers.phantom.connectors.KeySpace
 import com.outworkers.phantom.database.Database
 import com.outworkers.phantom.dsl._
@@ -35,6 +37,8 @@ class FormRepositoryImpl extends FormRepository {
   override def clear: Future[Boolean] = ???
 
   override def deleteByTeamId(teamId: String): Future[Boolean] = ???
+
+  override def getTeamFormForDate(teamId: String, date: time.LocalDate): Future[Seq[Form]] = ???
 }
 
 class FormDatabase(override val connector: KeySpaceDef) extends Database[FormDatabase](connector) {

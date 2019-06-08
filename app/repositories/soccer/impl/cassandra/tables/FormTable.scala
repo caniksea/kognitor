@@ -60,4 +60,11 @@ abstract class FormTable extends Table[FormTable, Form] with RootConnector {
       .future()
   }
 
+  def getTeamFormForDate(teamId: String, date: LocalDate): Future[Seq[Form]] = {
+    select
+      .where(_.teamId eqs teamId)
+      .and(_.dateCreated eqs date)
+      .fetchEnumerator() run Iteratee.collect()
+  }
+
 }

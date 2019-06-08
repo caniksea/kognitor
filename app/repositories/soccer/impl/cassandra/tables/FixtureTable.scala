@@ -63,4 +63,11 @@ abstract class FixtureTable extends Table[FixtureTable, Fixture] with RootConnec
       .future()
   }
 
+  def getTeamMatchForDate(teamId: String, date: LocalDate): Future[Seq[Fixture]] = {
+    select
+      .where(_.homeTeamId eqs teamId)
+      .and(_.dateCreated eqs date)
+      .fetchEnumerator() run Iteratee.collect()
+  }
+
 }

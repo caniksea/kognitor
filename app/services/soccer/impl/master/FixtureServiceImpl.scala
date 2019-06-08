@@ -1,5 +1,7 @@
 package services.soccer.impl.master
 
+import java.time.LocalDate
+
 import domain.soccer.Fixture
 import repositories.soccer.FixtureRepository
 import services.soccer.FixtureService
@@ -26,4 +28,6 @@ class FixtureServiceImpl extends FixtureService {
   override def clear: Future[Boolean] = ???
 
   override def deleteByTeamId(teamId: String): Future[Boolean] = ???
+
+  override def getTeamMatchForDate(teamId: String, date: LocalDate): Future[Seq[Fixture]] = ???
 }
